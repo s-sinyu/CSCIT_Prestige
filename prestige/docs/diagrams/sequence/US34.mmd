@@ -1,0 +1,27 @@
+sequenceDiagram
+  autonumber
+  actor A as Interior Designer
+  participant UI as «boundary»<br/>ProjectImages
+  participant B as «boundary»<br/>UploadProjectImageBoundary
+  participant C as «control»<br/>UploadProjectImageController
+  participant StorageService as «control»<br/>StorageService
+  participant ProjectImage as «entity»<br/>ProjectImage
+  participant DB as PostgreSQL
+  A->>UI: upload photos to my IDP
+  UI->>B: POST /api/designer/projects/{id}/images (JWT)
+  B->>C: upload(Integer designerId, Integer projectId, MultipartFile file)
+  alt 11th image or invalid file
+    C-->>B: ApiException
+    B-->>UI: 400 error JSON
+    UI-->>A: show error
+  else valid
+  C->>StorageService: store()
+  StorageService-->>C: result
+  C->>ProjectImage: save()
+  ProjectImage->>DB: SQL
+  DB-->>ProjectImage: rows
+  ProjectImage-->>C: result
+  C-->>B: ImageResponse
+  B-->>UI: 201 Created JSON
+  UI-->>A: show result
+  end

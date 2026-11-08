@@ -1,0 +1,29 @@
+sequenceDiagram
+  autonumber
+  actor A as Customer
+  participant UI as «boundary»<br/>EnquiryDialog
+  participant B as «boundary»<br/>SendEnquiryBoundary
+  participant C as «control»<br/>SendEnquiryController
+  participant InteriorDesignProject as «entity»<br/>InteriorDesignProject
+  participant Enquiry as «entity»<br/>Enquiry
+  participant DB as PostgreSQL
+  A->>UI: send an enquiry about an IDP
+  UI->>B: POST /api/projects/{id}/enquiries (JWT)
+  B->>C: send(Integer customerId, Integer projectId, EnquiryRequest request)
+  alt IDP not visible or empty message
+    C-->>B: ApiException
+    B-->>UI: 404 / 400 error JSON
+    UI-->>A: show error
+  else valid
+  C->>InteriorDesignProject: findVisibleById()
+  InteriorDesignProject->>DB: SQL
+  DB-->>InteriorDesignProject: rows
+  InteriorDesignProject-->>C: result
+  C->>Enquiry: save()
+  Enquiry->>DB: SQL
+  DB-->>Enquiry: rows
+  Enquiry-->>C: result
+  C-->>B: EnquiryCreated
+  B-->>UI: 201 Created JSON
+  UI-->>A: show result
+  end

@@ -1,0 +1,28 @@
+sequenceDiagram
+  autonumber
+  actor A as Platform Management
+  participant UI as «boundary»<br/>CategoriesPage
+  participant B as «boundary»<br/>CreateCategoryBoundary
+  participant C as «control»<br/>CreateCategoryController
+  participant Category as «entity»<br/>Category
+  participant DB as PostgreSQL
+  A->>UI: create a category
+  UI->>B: POST /api/management/categories (JWT)
+  B->>C: create(CategoryRequest request)
+  alt name already used
+    C-->>B: ApiException
+    B-->>UI: 409 error JSON
+    UI-->>A: show error
+  else valid
+  C->>Category: nameTaken()
+  Category->>DB: SQL
+  DB-->>Category: rows
+  Category-->>C: result
+  C->>Category: save()
+  Category->>DB: SQL
+  DB-->>Category: rows
+  Category-->>C: result
+  C-->>B: CategoryResponse
+  B-->>UI: 201 Created JSON
+  UI-->>A: show result
+  end

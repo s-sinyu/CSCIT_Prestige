@@ -1,0 +1,29 @@
+sequenceDiagram
+  autonumber
+  actor A as Interior Designer
+  participant UI as «boundary»<br/>ProjectEditorPage
+  participant B as «boundary»<br/>CreateProjectBoundary
+  participant C as «control»<br/>CreateProjectController
+  participant Category as «entity»<br/>Category
+  participant InteriorDesignProject as «entity»<br/>InteriorDesignProject
+  participant DB as PostgreSQL
+  A->>UI: create an IDP
+  UI->>B: POST /api/designer/projects (JWT)
+  B->>C: create(Integer designerId, ProjectRequest request)
+  alt inactive category / invalid dates
+    C-->>B: ApiException
+    B-->>UI: 400 error JSON
+    UI-->>A: show error
+  else valid
+  C->>Category: findById()
+  Category->>DB: SQL
+  DB-->>Category: rows
+  Category-->>C: result
+  C->>InteriorDesignProject: save()
+  InteriorDesignProject->>DB: SQL
+  DB-->>InteriorDesignProject: rows
+  InteriorDesignProject-->>C: result
+  C-->>B: DesignerProjectDetail
+  B-->>UI: 201 Created JSON
+  UI-->>A: show result
+  end

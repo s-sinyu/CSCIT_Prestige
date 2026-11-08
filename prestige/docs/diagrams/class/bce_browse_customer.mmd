@@ -1,0 +1,159 @@
+---
+title: "Browsing, favourites, enquiries, availability, ratings (customer)"
+---
+classDiagram
+  direction LR
+  class SearchProjectsBoundary {
+    <<boundary>>
+    +search() GET
+  }
+  class SearchProjectsController {
+    <<control>>
+    +search(criteria, pageable) PageResponse~ProjectCard~
+  }
+  SearchProjectsBoundary --> SearchProjectsController
+  SearchProjectsController ..> InteriorDesignProject
+  SearchProjectsController ..> DesignerCompany
+  SearchProjectsController ..> ProjectImage
+  class ViewProjectDetailBoundary {
+    <<boundary>>
+    +view() GET
+  }
+  class ViewProjectDetailController {
+    <<control>>
+    +view(projectId, caller) ProjectDetail
+  }
+  ViewProjectDetailBoundary --> ViewProjectDetailController
+  ViewProjectDetailController ..> InteriorDesignProject
+  ViewProjectDetailController ..> ProjectImage
+  ViewProjectDetailController ..> ProjectView
+  ViewProjectDetailController ..> Favourite
+  class ViewActiveCategoriesBoundary {
+    <<boundary>>
+    +list() GET
+  }
+  class ViewActiveCategoriesController {
+    <<control>>
+    +list() List~CategoryResponse~
+  }
+  ViewActiveCategoriesBoundary --> ViewActiveCategoriesController
+  ViewActiveCategoriesController ..> Category
+  class ViewDesignerRatingsBoundary {
+    <<boundary>>
+    +view() GET
+  }
+  class ViewDesignerRatingsController {
+    <<control>>
+    +view(designerId, projectId, callerId, pageable) DesignerRatingsResponse
+  }
+  ViewDesignerRatingsBoundary --> ViewDesignerRatingsController
+  ViewDesignerRatingsController ..> Rating
+  class AddFavouriteBoundary {
+    <<boundary>>
+    +add() POST
+  }
+  class AddFavouriteController {
+    <<control>>
+    +add(customerId, projectId) void
+  }
+  AddFavouriteBoundary --> AddFavouriteController
+  AddFavouriteController ..> InteriorDesignProject
+  AddFavouriteController ..> Favourite
+  class RemoveFavouriteBoundary {
+    <<boundary>>
+    +remove() DELETE
+  }
+  class RemoveFavouriteController {
+    <<control>>
+    +remove(customerId, projectId) void
+  }
+  RemoveFavouriteBoundary --> RemoveFavouriteController
+  RemoveFavouriteController ..> Favourite
+  class ViewFavouritesBoundary {
+    <<boundary>>
+    +list() GET
+  }
+  class ViewFavouritesController {
+    <<control>>
+    +list(customerId, pageable) PageResponse~ProjectCard~
+  }
+  ViewFavouritesBoundary --> ViewFavouritesController
+  ViewFavouritesController ..> Favourite
+  class SendEnquiryBoundary {
+    <<boundary>>
+    +send() POST
+  }
+  class SendEnquiryController {
+    <<control>>
+    +send(customerId, projectId, request) EnquiryCreated
+  }
+  SendEnquiryBoundary --> SendEnquiryController
+  SendEnquiryController ..> InteriorDesignProject
+  SendEnquiryController ..> Enquiry
+  class ViewDesignerAvailabilityBoundary {
+    <<boundary>>
+    +view() GET
+  }
+  class ViewDesignerAvailabilityController {
+    <<control>>
+    +view(designerId, month) AvailabilityMonth
+  }
+  ViewDesignerAvailabilityBoundary --> ViewDesignerAvailabilityController
+  ViewDesignerAvailabilityController ..> Availability
+  class CreateRatingBoundary {
+    <<boundary>>
+    +create() POST
+  }
+  class CreateRatingController {
+    <<control>>
+    +create(customerId, request) RatingResponse
+  }
+  CreateRatingBoundary --> CreateRatingController
+  CreateRatingController ..> Rating
+  class UpdateRatingBoundary {
+    <<boundary>>
+    +update() PUT
+  }
+  class UpdateRatingController {
+    <<control>>
+    +update(customerId, ratingId, request) RatingResponse
+  }
+  UpdateRatingBoundary --> UpdateRatingController
+  UpdateRatingController ..> Rating
+  class DeleteOwnRatingBoundary {
+    <<boundary>>
+    +delete() DELETE
+  }
+  class DeleteOwnRatingController {
+    <<control>>
+    +delete(customerId, ratingId) void
+  }
+  DeleteOwnRatingBoundary --> DeleteOwnRatingController
+  DeleteOwnRatingController ..> Rating
+  class InteriorDesignProject {
+    <<entity>>
+  }
+  class DesignerCompany {
+    <<entity>>
+  }
+  class ProjectImage {
+    <<entity>>
+  }
+  class ProjectView {
+    <<entity>>
+  }
+  class Favourite {
+    <<entity>>
+  }
+  class Category {
+    <<entity>>
+  }
+  class Rating {
+    <<entity>>
+  }
+  class Enquiry {
+    <<entity>>
+  }
+  class Availability {
+    <<entity>>
+  }

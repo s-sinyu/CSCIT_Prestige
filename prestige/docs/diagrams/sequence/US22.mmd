@@ -1,0 +1,28 @@
+sequenceDiagram
+  autonumber
+  actor A as Interior Designer
+  participant UI as «boundary»<br/>CompanyPage
+  participant B as «boundary»<br/>CreateCompanyBoundary
+  participant C as «control»<br/>CreateCompanyController
+  participant DesignerCompany as «entity»<br/>DesignerCompany
+  participant DB as PostgreSQL
+  A->>UI: add my company information
+  UI->>B: POST /api/designer/company (JWT)
+  B->>C: create(Integer designerId, CompanyRequest request)
+  alt company already exists
+    C-->>B: ApiException
+    B-->>UI: 409 error JSON
+    UI-->>A: show error
+  else valid
+  C->>DesignerCompany: existsForDesigner()
+  DesignerCompany->>DB: SQL
+  DB-->>DesignerCompany: rows
+  DesignerCompany-->>C: result
+  C->>DesignerCompany: save()
+  DesignerCompany->>DB: SQL
+  DB-->>DesignerCompany: rows
+  DesignerCompany-->>C: result
+  C-->>B: CompanyResponse
+  B-->>UI: 201 Created JSON
+  UI-->>A: show result
+  end

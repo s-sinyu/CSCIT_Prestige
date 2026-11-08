@@ -1,0 +1,22 @@
+# Local development. Uses the docker-compose PostgreSQL by default.
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+app:
+  jwt:
+    # Dev-only fallback so the app starts without setup. Never used in prod (prod has no fallback).
+    secret: ${APP_JWT_SECRET:dev-only-secret-change-me-dev-only-secret-change-me-0123456789}
+  admin:
+    email: ${APP_ADMIN_EMAIL:admin@prestige.local}
+    password: ${APP_ADMIN_PASSWORD:Admin12345}
+  seed:
+    # Small demo dataset for local development (PRD section 9)
+    enabled: true
+    size: 10
+
+logging:
+  level:
+    com.prestige.renovation: DEBUG

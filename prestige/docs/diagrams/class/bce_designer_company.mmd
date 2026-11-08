@@ -1,0 +1,86 @@
+---
+title: "Designer company and profile"
+---
+classDiagram
+  direction LR
+  class CreateCompanyBoundary {
+    <<boundary>>
+    +create() POST
+  }
+  class CreateCompanyController {
+    <<control>>
+    +create(designerId, request) CompanyResponse
+  }
+  CreateCompanyBoundary --> CreateCompanyController
+  CreateCompanyController ..> DesignerCompany
+  class ViewCompanyBoundary {
+    <<boundary>>
+    +view() GET
+  }
+  class ViewCompanyController {
+    <<control>>
+    +view(designerId) CompanyResponse
+  }
+  ViewCompanyBoundary --> ViewCompanyController
+  ViewCompanyController ..> DesignerCompany
+  class UpdateCompanyBoundary {
+    <<boundary>>
+    +update() PUT
+  }
+  class UpdateCompanyController {
+    <<control>>
+    +update(designerId, request) CompanyResponse
+  }
+  UpdateCompanyBoundary --> UpdateCompanyController
+  UpdateCompanyController ..> DesignerCompany
+  class DeleteCompanyBoundary {
+    <<boundary>>
+    +delete() DELETE
+  }
+  class DeleteCompanyController {
+    <<control>>
+    +delete(designerId) void
+  }
+  DeleteCompanyBoundary --> DeleteCompanyController
+  DeleteCompanyController ..> DesignerCompany
+  DeleteCompanyController ..> StorageService
+  class UploadCompanyLogoBoundary {
+    <<boundary>>
+    +upload() POST
+  }
+  class UploadCompanyLogoController {
+    <<control>>
+    +upload(designerId, file) CompanyResponse
+  }
+  UploadCompanyLogoBoundary --> UploadCompanyLogoController
+  UploadCompanyLogoController ..> StorageService
+  UploadCompanyLogoController ..> DesignerCompany
+  class ViewDesignerProfileBoundary {
+    <<boundary>>
+    +view() GET
+  }
+  class ViewDesignerProfileController {
+    <<control>>
+    +view(designerId) DesignerProfileResponse
+  }
+  ViewDesignerProfileBoundary --> ViewDesignerProfileController
+  ViewDesignerProfileController ..> DesignerProfile
+  class UpdateDesignerProfileBoundary {
+    <<boundary>>
+    +update() PUT
+  }
+  class UpdateDesignerProfileController {
+    <<control>>
+    +update(designerId, request) DesignerProfileResponse
+  }
+  UpdateDesignerProfileBoundary --> UpdateDesignerProfileController
+  UpdateDesignerProfileController ..> DesignerProfile
+  class DesignerCompany {
+    <<entity>>
+  }
+  class StorageService {
+    <<control>>
+  }
+  class DesignerProfile {
+    <<entity>>
+  }

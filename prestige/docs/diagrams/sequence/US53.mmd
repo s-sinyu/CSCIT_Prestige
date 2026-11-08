@@ -1,0 +1,28 @@
+sequenceDiagram
+  autonumber
+  actor A as User Admin
+  participant UI as «boundary»<br/>UserDialog
+  participant B as «boundary»<br/>UpdateUserAccountBoundary
+  participant C as «control»<br/>UpdateUserAccountController
+  participant User as «entity»<br/>User
+  participant DB as PostgreSQL
+  A->>UI: edit an account's name, phone and email
+  UI->>B: PUT /api/admin/users/{id} (JWT)
+  B->>C: update(Integer userId, AdminUpdateUserRequest request)
+  alt email used by another account
+    C-->>B: ApiException
+    B-->>UI: 409 error JSON
+    UI-->>A: show error
+  else valid
+  C->>User: emailTakenByOther()
+  User->>DB: SQL
+  DB-->>User: rows
+  User-->>C: result
+  C->>User: save()
+  User->>DB: SQL
+  DB-->>User: rows
+  User-->>C: result
+  C-->>B: AdminUserResponse
+  B-->>UI: 200 OK JSON
+  UI-->>A: show result
+  end

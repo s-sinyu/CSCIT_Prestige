@@ -1,0 +1,28 @@
+sequenceDiagram
+  autonumber
+  actor A as Interior Designer
+  participant UI as «boundary»<br/>MyProjectsPage
+  participant B as «boundary»<br/>DeleteProjectBoundary
+  participant C as «control»<br/>DeleteProjectController
+  participant InteriorDesignProject as «entity»<br/>InteriorDesignProject
+  participant DB as PostgreSQL
+  A->>UI: delete my IDP
+  UI->>B: DELETE /api/designer/projects/{id} (JWT)
+  B->>C: delete(Integer designerId, Integer projectId)
+  alt IDP of another designer
+    C-->>B: ApiException
+    B-->>UI: 404 error JSON
+    UI-->>A: show error
+  else valid
+  C->>InteriorDesignProject: softDelete()
+  InteriorDesignProject->>DB: SQL
+  DB-->>InteriorDesignProject: rows
+  InteriorDesignProject-->>C: result
+  C->>InteriorDesignProject: save()
+  InteriorDesignProject->>DB: SQL
+  DB-->>InteriorDesignProject: rows
+  InteriorDesignProject-->>C: result
+  C-->>B: void
+  B-->>UI: 204 No Content
+  UI-->>A: show result
+  end

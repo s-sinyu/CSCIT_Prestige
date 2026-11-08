@@ -1,0 +1,19 @@
+sequenceDiagram
+  autonumber
+  actor A as Platform Management
+  participant UI as «boundary»<br/>ReportsPage
+  participant B as «boundary»<br/>ExportPlatformReportBoundary
+  participant C as «control»<br/>ExportPlatformReportController
+  participant PlatformReportGenerator as «control»<br/>PlatformReportGenerator
+  participant ReportCsvRenderer as «control»<br/>ReportCsvRenderer
+  participant DB as PostgreSQL
+  A->>UI: export a report as CSV
+  UI->>B: GET /api/management/reports/export (JWT)
+  B->>C: export(ReportPeriodType period, LocalDate date)
+  C->>PlatformReportGenerator: generate(period, date)
+  PlatformReportGenerator->>ReportCsvRenderer: render()
+  ReportCsvRenderer-->>PlatformReportGenerator: result
+  PlatformReportGenerator-->>C: PlatformReport
+  C-->>B: CsvExport
+  B-->>UI: 200 OK JSON
+  UI-->>A: show result

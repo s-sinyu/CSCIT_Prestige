@@ -1,0 +1,39 @@
+sequenceDiagram
+  autonumber
+  actor A as Visitor
+  participant UI as «boundary»<br/>ProjectDetailPage
+  participant B as «boundary»<br/>ViewProjectDetailBoundary
+  participant C as «control»<br/>ViewProjectDetailController
+  participant InteriorDesignProject as «entity»<br/>InteriorDesignProject
+  participant ProjectImage as «entity»<br/>ProjectImage
+  participant ProjectView as «entity»<br/>ProjectView
+  participant Favourite as «entity»<br/>Favourite
+  participant DB as PostgreSQL
+  A->>UI: view an IDP's details, photos and designer information
+  UI->>B: GET /api/projects/{id} (JWT)
+  B->>C: view(Integer projectId, AuthUser caller)
+  alt IDP hidden (deleted or designer inactive)
+    C-->>B: ApiException
+    B-->>UI: 404 error JSON
+    UI-->>A: show error
+  else valid
+  C->>InteriorDesignProject: findVisibleById()
+  InteriorDesignProject->>DB: SQL
+  DB-->>InteriorDesignProject: rows
+  InteriorDesignProject-->>C: result
+  C->>ProjectImage: findByProject()
+  ProjectImage->>DB: SQL
+  DB-->>ProjectImage: rows
+  ProjectImage-->>C: result
+  C->>ProjectView: record()
+  ProjectView->>DB: SQL
+  DB-->>ProjectView: rows
+  ProjectView-->>C: result
+  C->>Favourite: exists()
+  Favourite->>DB: SQL
+  DB-->>Favourite: rows
+  Favourite-->>C: result
+  C-->>B: ProjectDetail
+  B-->>UI: 200 OK JSON
+  UI-->>A: show result
+  end

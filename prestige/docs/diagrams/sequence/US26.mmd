@@ -1,0 +1,27 @@
+sequenceDiagram
+  autonumber
+  actor A as Interior Designer
+  participant UI as «boundary»<br/>CompanyPage
+  participant B as «boundary»<br/>UploadCompanyLogoBoundary
+  participant C as «control»<br/>UploadCompanyLogoController
+  participant StorageService as «control»<br/>StorageService
+  participant DesignerCompany as «entity»<br/>DesignerCompany
+  participant DB as PostgreSQL
+  A->>UI: upload my company logo
+  UI->>B: POST /api/designer/company/logo (JWT)
+  B->>C: upload(Integer designerId, MultipartFile file)
+  alt not JPEG/PNG/WebP or > 5 MB
+    C-->>B: ApiException
+    B-->>UI: 400 error JSON
+    UI-->>A: show error
+  else valid
+  C->>StorageService: store()
+  StorageService-->>C: result
+  C->>DesignerCompany: save()
+  DesignerCompany->>DB: SQL
+  DB-->>DesignerCompany: rows
+  DesignerCompany-->>C: result
+  C-->>B: CompanyResponse
+  B-->>UI: 200 OK JSON
+  UI-->>A: show result
+  end

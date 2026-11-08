@@ -1,0 +1,18 @@
+sequenceDiagram
+  autonumber
+  actor A as User
+  participant UI as «boundary»<br/>ProfilePage
+  participant B as «boundary»<br/>ViewOwnProfileBoundary
+  participant C as «control»<br/>ViewOwnProfileController
+  participant User as «entity»<br/>User
+  participant DB as PostgreSQL
+  A->>UI: view my profile
+  UI->>B: GET /api/me (JWT)
+  B->>C: view(Integer userId)
+  C->>User: findById()
+  User->>DB: SQL
+  DB-->>User: rows
+  User-->>C: result
+  C-->>B: UserSummary
+  B-->>UI: 200 OK JSON
+  UI-->>A: show result

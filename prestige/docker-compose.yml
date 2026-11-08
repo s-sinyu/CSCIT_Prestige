@@ -1,0 +1,14 @@
+# Local development database (PostgreSQL 16). Start with: docker compose up -d
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: prestige
+      POSTGRES_USER: prestige
+      POSTGRES_PASSWORD: prestige
+    ports:
+      - "5432:5432"
+    volumes:
+      - prestige-db:/var/lib/postgresql/data
+volumes:
+  prestige-db:

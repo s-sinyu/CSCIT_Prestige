@@ -1,0 +1,123 @@
+---
+title: "Designer IDPs, images, dashboard"
+---
+classDiagram
+  direction LR
+  class CreateProjectBoundary {
+    <<boundary>>
+    +create() POST
+  }
+  class CreateProjectController {
+    <<control>>
+    +create(designerId, request) DesignerProjectDetail
+  }
+  CreateProjectBoundary --> CreateProjectController
+  CreateProjectController ..> Category
+  CreateProjectController ..> InteriorDesignProject
+  class ViewMyProjectsBoundary {
+    <<boundary>>
+    +list() GET
+  }
+  class ViewMyProjectsController {
+    <<control>>
+    +list(designerId, pageable) PageResponse~DesignerProjectSummary~
+  }
+  ViewMyProjectsBoundary --> ViewMyProjectsController
+  ViewMyProjectsController ..> InteriorDesignProject
+  ViewMyProjectsController ..> ProjectView
+  ViewMyProjectsController ..> Favourite
+  class ViewMyProjectBoundary {
+    <<boundary>>
+    +view() GET
+  }
+  class ViewMyProjectController {
+    <<control>>
+    +view(designerId, projectId) DesignerProjectDetail
+  }
+  ViewMyProjectBoundary --> ViewMyProjectController
+  ViewMyProjectController ..> InteriorDesignProject
+  class UpdateProjectBoundary {
+    <<boundary>>
+    +update() PUT
+  }
+  class UpdateProjectController {
+    <<control>>
+    +update(designerId, projectId, request) DesignerProjectDetail
+  }
+  UpdateProjectBoundary --> UpdateProjectController
+  UpdateProjectController ..> InteriorDesignProject
+  class DeleteProjectBoundary {
+    <<boundary>>
+    +delete() DELETE
+  }
+  class DeleteProjectController {
+    <<control>>
+    +delete(designerId, projectId) void
+  }
+  DeleteProjectBoundary --> DeleteProjectController
+  DeleteProjectController ..> InteriorDesignProject
+  class UploadProjectImageBoundary {
+    <<boundary>>
+    +upload() POST
+  }
+  class UploadProjectImageController {
+    <<control>>
+    +upload(designerId, projectId, file) ImageResponse
+  }
+  UploadProjectImageBoundary --> UploadProjectImageController
+  UploadProjectImageController ..> StorageService
+  UploadProjectImageController ..> ProjectImage
+  class DeleteProjectImageBoundary {
+    <<boundary>>
+    +delete() DELETE
+  }
+  class DeleteProjectImageController {
+    <<control>>
+    +delete(designerId, projectId, imageId) void
+  }
+  DeleteProjectImageBoundary --> DeleteProjectImageController
+  DeleteProjectImageController ..> ProjectImage
+  DeleteProjectImageController ..> StorageService
+  class SetCoverImageBoundary {
+    <<boundary>>
+    +setCover() PUT
+  }
+  class SetCoverImageController {
+    <<control>>
+    +setCover(designerId, projectId, imageId) List~ImageResponse~
+  }
+  SetCoverImageBoundary --> SetCoverImageController
+  SetCoverImageController ..> ProjectImage
+  class ViewDesignerDashboardBoundary {
+    <<boundary>>
+    +view() GET
+  }
+  class ViewDesignerDashboardController {
+    <<control>>
+    +view(designerId) DashboardResponse
+  }
+  ViewDesignerDashboardBoundary --> ViewDesignerDashboardController
+  ViewDesignerDashboardController ..> ProjectView
+  ViewDesignerDashboardController ..> Favourite
+  ViewDesignerDashboardController ..> Enquiry
+  class Category {
+    <<entity>>
+  }
+  class InteriorDesignProject {
+    <<entity>>
+  }
+  class ProjectView {
+    <<entity>>
+  }
+  class Favourite {
+    <<entity>>
+  }
+  class StorageService {
+    <<control>>
+  }
+  class ProjectImage {
+    <<entity>>
+  }
+  class Enquiry {
+    <<entity>>
+  }

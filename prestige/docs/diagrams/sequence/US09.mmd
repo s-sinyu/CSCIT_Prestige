@@ -1,0 +1,22 @@
+sequenceDiagram
+  autonumber
+  actor A as User
+  participant UI as «boundary»<br/>ProfilePage
+  participant B as «boundary»<br/>UpdateOwnProfileBoundary
+  participant C as «control»<br/>UpdateOwnProfileController
+  participant User as «entity»<br/>User
+  participant DB as PostgreSQL
+  A->>UI: edit my name and phone
+  UI->>B: PUT /api/me (JWT)
+  B->>C: update(Integer userId, ProfileUpdateRequest request)
+  C->>User: updateDetails()
+  User->>DB: SQL
+  DB-->>User: rows
+  User-->>C: result
+  C->>User: save()
+  User->>DB: SQL
+  DB-->>User: rows
+  User-->>C: result
+  C-->>B: UserSummary
+  B-->>UI: 200 OK JSON
+  UI-->>A: show result

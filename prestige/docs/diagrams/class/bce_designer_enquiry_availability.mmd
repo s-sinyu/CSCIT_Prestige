@@ -1,0 +1,61 @@
+---
+title: "Designer enquiries and availability"
+---
+classDiagram
+  direction LR
+  class ViewEnquiriesBoundary {
+    <<boundary>>
+    +list() GET
+  }
+  class ViewEnquiriesController {
+    <<control>>
+    +list(designerId, status, pageable) PageResponse~EnquirySummary~
+  }
+  ViewEnquiriesBoundary --> ViewEnquiriesController
+  ViewEnquiriesController ..> Enquiry
+  class ViewEnquiryDetailBoundary {
+    <<boundary>>
+    +view() GET
+  }
+  class ViewEnquiryDetailController {
+    <<control>>
+    +view(designerId, enquiryId) EnquiryDetail
+  }
+  ViewEnquiryDetailBoundary --> ViewEnquiryDetailController
+  ViewEnquiryDetailController ..> Enquiry
+  class UpdateEnquiryStatusBoundary {
+    <<boundary>>
+    +updateStatus() PATCH
+  }
+  class UpdateEnquiryStatusController {
+    <<control>>
+    +updateStatus(designerId, enquiryId, status) EnquiryDetail
+  }
+  UpdateEnquiryStatusBoundary --> UpdateEnquiryStatusController
+  UpdateEnquiryStatusController ..> Enquiry
+  class ViewOwnAvailabilityBoundary {
+    <<boundary>>
+    +view() GET
+  }
+  class ViewOwnAvailabilityController {
+    <<control>>
+    +view(designerId, month) AvailabilityMonth
+  }
+  ViewOwnAvailabilityBoundary --> ViewOwnAvailabilityController
+  ViewOwnAvailabilityController ..> Availability
+  class SetAvailabilityBoundary {
+    <<boundary>>
+    +set() PUT
+  }
+  class SetAvailabilityController {
+    <<control>>
+    +set(designerId, date, status) AvailabilityDay
+  }
+  SetAvailabilityBoundary --> SetAvailabilityController
+  SetAvailabilityController ..> Availability
+  class Enquiry {
+    <<entity>>
+  }
+  class Availability {
+    <<entity>>
+  }

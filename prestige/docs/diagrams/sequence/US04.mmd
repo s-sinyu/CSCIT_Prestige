@@ -1,0 +1,28 @@
+sequenceDiagram
+  autonumber
+  actor A as Visitor
+  participant UI as «boundary»<br/>BrowsePage
+  participant B as «boundary»<br/>SearchProjectsBoundary
+  participant C as «control»<br/>SearchProjectsController
+  participant InteriorDesignProject as «entity»<br/>InteriorDesignProject
+  participant DesignerCompany as «entity»<br/>DesignerCompany
+  participant ProjectImage as «entity»<br/>ProjectImage
+  participant DB as PostgreSQL
+  A->>UI: search and filter IDPs by keyword, category, budget, status and designer
+  UI->>B: GET /api/projects (JWT)
+  B->>C: search(InteriorDesignProject.SearchCriteria criteria, Pageable pageable)
+  C->>InteriorDesignProject: search()
+  InteriorDesignProject->>DB: SQL
+  DB-->>InteriorDesignProject: rows
+  InteriorDesignProject-->>C: result
+  C->>DesignerCompany: findByDesigners()
+  DesignerCompany->>DB: SQL
+  DB-->>DesignerCompany: rows
+  DesignerCompany-->>C: result
+  C->>ProjectImage: coverKeys()
+  ProjectImage->>DB: SQL
+  DB-->>ProjectImage: rows
+  ProjectImage-->>C: result
+  C-->>B: PageResponse<ProjectCard>
+  B-->>UI: 200 OK JSON
+  UI-->>A: show result

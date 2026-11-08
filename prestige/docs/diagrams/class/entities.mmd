@@ -1,0 +1,171 @@
+classDiagram
+  direction TB
+  class User {
+    <<entity>>
+    -Integer id
+    -String email
+    -String passwordHash
+    -String fullName
+    -String phone
+    -Role role
+    -AccountStatus status
+    -boolean deleted
+    -Instant createdAt
+    +findById(id)$ Optional~User~
+    +findByEmail(email)$ Optional~User~
+    +emailTaken(email)$ boolean
+    +search(q, role, status, includeDeleted, page)$ Page~User~
+    +countRegistrationsByRole(from, to)$ Map
+    +isActive() boolean
+    +changeStatus(status)
+    +softDelete(when)
+    +save() User
+  }
+  class DesignerProfile {
+    <<entity>>
+    -String bio
+    -Integer yearsOfExperience
+    -String specialisation
+    +findByDesigner(id)$ Optional
+    +update(bio, years, specialisation)
+    +save()
+  }
+  class DesignerCompany {
+    <<entity>>
+    -String companyName
+    -String registrationNumber
+    -String description
+    -String address
+    -String contactEmail
+    -String contactPhone
+    -String websiteUrl
+    -String logoKey
+    +findByDesigner(id)$ Optional
+    +findByDesigners(ids)$ Map
+    +update(...)
+    +save()
+    +delete()
+  }
+  class Category {
+    <<entity>>
+    -String name
+    -String description
+    -boolean active
+    +findActive()$ List
+    +nameTaken(name)$ boolean
+    +usageCount() long
+    +save()
+    +delete()
+  }
+  class InteriorDesignProject {
+    <<entity>>
+    -String title
+    -String description
+    -ProjectStatus status
+    -BigDecimal budget
+    -LocalDate startDate
+    -LocalDate endDate
+    -String location
+    -boolean deleted
+    +visible()$ Specification
+    +search(criteria, page)$ Page
+    +findVisibleById(id)$ Optional
+    +findOwned(id, designerId)$ Optional
+    +countCreatedByCategory(from, to)$ Map
+    +isOwnedBy(userId) boolean
+    +softDelete(when)
+    +save()
+  }
+  class ProjectImage {
+    <<entity>>
+    -String fileKey
+    -int sortOrder
+    -boolean cover
+    +findByProject(id)$ List
+    +coverKeys(ids)$ Map
+    +save()
+    +delete()
+  }
+  class StoredFile {
+    <<entity>>
+    -String fileKey
+    -String contentType
+    -byte[] data
+    +findByKey(key)$ Optional
+    +save()
+  }
+  class Favourite {
+    <<entity>>
+    -Instant savedAt
+    +add(customerId, projectId, at)$ boolean
+    +remove(customerId, projectId)$
+    +shortlistCount(projectId)$ long
+    +findVisibleForCustomer(id, page)$ Page
+  }
+  class ProjectView {
+    <<entity>>
+    -LocalDate viewDate
+    -Instant viewedAt
+    +record(projectId, customerId, day, at)$ boolean
+    +topViewed(from, to, n)$ List
+  }
+  class Enquiry {
+    <<entity>>
+    -String message
+    -EnquiryStatus status
+    -Instant readAt
+    -Instant repliedAt
+    +findForDesigner(id, status, page)$ Page
+    +belongsToDesigner(id) boolean
+    +changeStatus(target, when) boolean
+    +save()
+  }
+  class Availability {
+    <<entity>>
+    -LocalDate calendarDate
+    -AvailabilityStatus status
+    +monthFor(designerId, month)$ Map
+    +save()
+  }
+  class Rating {
+    <<entity>>
+    -int score
+    -String comment
+    +summaryFor(designerId)$ Summary
+    +generalRatingExists(c, d)$ boolean
+    +projectRatingExists(c, p)$ boolean
+    +isWrittenBy(id) boolean
+    +update(score, comment)
+    +save()
+    +delete()
+  }
+  class IssueReport {
+    <<entity>>
+    -IssueReportType type
+    -String title
+    -String description
+    -IssueReportStatus status
+    -Instant rectifiedAt
+    +search(status, type, page)$ Page
+    +rectify(admin, when) boolean
+    +isReportedBy(id) boolean
+    +save()
+  }
+  User "1" -- "0..1" DesignerProfile : designer
+  User "1" -- "0..1" DesignerCompany : designer
+  User "1" -- "0..*" InteriorDesignProject : designer
+  Category "1" -- "0..*" InteriorDesignProject
+  InteriorDesignProject "1" *-- "0..10" ProjectImage
+  ProjectImage "1" --> "1" StoredFile
+  DesignerCompany "1" --> "0..1" StoredFile : logo
+  User "1" -- "0..*" Favourite : customer
+  InteriorDesignProject "1" -- "0..*" Favourite
+  User "1" -- "0..*" ProjectView : customer
+  InteriorDesignProject "1" -- "0..*" ProjectView
+  User "1" -- "0..*" Enquiry : customer
+  InteriorDesignProject "1" -- "0..*" Enquiry
+  User "1" -- "0..*" Availability : designer
+  User "1" -- "0..*" Rating : customer / designer
+  InteriorDesignProject "0..1" -- "0..*" Rating
+  User "1" -- "0..*" IssueReport : reporter
+  InteriorDesignProject "0..1" -- "0..*" IssueReport : target

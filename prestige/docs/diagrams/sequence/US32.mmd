@@ -1,0 +1,28 @@
+sequenceDiagram
+  autonumber
+  actor A as Interior Designer
+  participant UI as «boundary»<br/>ProjectEditorPage
+  participant B as «boundary»<br/>UpdateProjectBoundary
+  participant C as «control»<br/>UpdateProjectController
+  participant InteriorDesignProject as «entity»<br/>InteriorDesignProject
+  participant DB as PostgreSQL
+  A->>UI: edit my IDP
+  UI->>B: PUT /api/designer/projects/{id} (JWT)
+  B->>C: update(Integer designerId, Integer projectId, ProjectRequest request)
+  alt IDP of another designer / inactive category
+    C-->>B: ApiException
+    B-->>UI: 404 / 400 error JSON
+    UI-->>A: show error
+  else valid
+  C->>InteriorDesignProject: update()
+  InteriorDesignProject->>DB: SQL
+  DB-->>InteriorDesignProject: rows
+  InteriorDesignProject-->>C: result
+  C->>InteriorDesignProject: save()
+  InteriorDesignProject->>DB: SQL
+  DB-->>InteriorDesignProject: rows
+  InteriorDesignProject-->>C: result
+  C-->>B: DesignerProjectDetail
+  B-->>UI: 200 OK JSON
+  UI-->>A: show result
+  end

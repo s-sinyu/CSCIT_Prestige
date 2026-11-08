@@ -1,0 +1,149 @@
+# Prestige: renovation customers meet interior designers
+
+CSIT314 group project. An online platform where **interior designers** publish their portfolio of
+interior design projects (IDPs) and **customers** search, save and enquire about them.
+**Platform Management** manages categories and reports; the **User Admin** manages accounts and issue reports.
+
+| Part | Technology |
+|---|---|
+| Backend | Java 21, Spring Boot 3.5, Spring Security (JWT), Spring Data JPA, Flyway, PostgreSQL 16 |
+| Frontend | React 18, Vite, Material UI 6, React Router, Axios |
+| Tests | JUnit 5, Mockito, Testcontainers, MockMvc, Vitest, React Testing Library |
+| Hosting | Render (API as a Docker web service, React as a static site), Neon (PostgreSQL) |
+| CI/CD | GitHub Actions; Render deploys `main` only after the checks pass |
+
+## Repository layout
+
+```
+backend/                      Spring Boot API (Maven)
+  src/main/java/com/prestige/renovation/
+    boundary/                 Boundary classes: one REST boundary per user story
+    control/                  Control classes: one controller per user story (business rules)
+    entity/                   Entity classes: data + data-access methods (Spring Data underneath)
+    dto/                      Request/response objects (entities are never returned)
+    common/                   Security (JWT), errors, storage, configuration, CSV
+    seed/                     Initial admin + test data generator
+  src/main/resources/db/migration   Flyway migrations
+  src/test/java/.../unit      Unit tests (JUnit + Mockito, no database)
+  src/test/java/.../it        Integration tests (MockMvc + Testcontainers PostgreSQL)
+frontend/                     React app (Vite)
+  src/api  src/context  src/routes  src/components  src/features/<role>  src/test
+docs/DECISIONS.md             Decisions and deviations from the PRD
+render.yaml                   Render Blueprint (deployment)
+.github/workflows/ci.yml      CI pipeline
+docker-compose.yml            Local PostgreSQL for development
+```
+
+## Run it locally
+
+You need **Java 21**, **Maven 3.9+**, **Node 20+** and **Docker Desktop** (Docker is used for the local
+database and by the integration tests).
+
+```bash
+# 1. Database
+docker compose up -d                  # PostgreSQL on localhost:5432 (db/user/password: prestige)
+
+# 2. Backend  (http://localhost:8080, Swagger UI at /swagger-ui.html)
+cd backend
+mvn spring-boot:run                   # "dev" profile: creates the admin and a small demo dataset
+
+# 3. Frontend (http://localhost:5173), in another terminal
+cd frontend
+cp .env.example .env                  # VITE_API_BASE_URL=http://localhost:8080
+npm install
+npm run dev
+```
+
+The `dev` profile works without any environment variables. To override settings, copy `.env.example`
+to `.env` in the repository root and export the values, or set them in your IDE run configuration.
+
+### Demo accounts
+
+| Role | Email | Password |
+|---|---|---|
+| User Admin | `admin@prestige.local` (dev) or `APP_ADMIN_EMAIL` | `Admin12345` (dev) or `APP_ADMIN_PASSWORD` |
+| Customer | `customer001@demo.prestige.sg` ... `customer100@...` | `Password123` |
+| Interior Designer | `designer001@demo.prestige.sg` ... | `Password123` |
+| Platform Management | `manager01@demo.prestige.sg` ... | `Password123` |
+
+The dev dataset has 10 of each; the full test dataset has 100. Every 25th customer and every 30th designer is
+suspended, to demonstrate the account rules.
+
+## Tests
+
+```bash
+cd backend && mvn test      # unit tests only (fast, no Docker needed)
+cd backend && mvn verify    # unit + integration tests (needs Docker running)
+cd frontend && npm test     # component tests
+cd frontend && npm run lint
+```
+
+## Deploy (Render + Neon), about 20 minutes, all free
+
+1. **Push this repository to GitHub** (public or private). Use `main` as the deployment branch.
+2. **Create the database on Neon** (https://neon.tech, sign up with GitHub).
+   - New project, region **AWS Asia Pacific (Singapore)**, PostgreSQL 16.
+   - On the dashboard click **Connect**, turn **Connection pooling off**, and note the host, database,
+     user and password. Build the JDBC URL:
+     `jdbc:postgresql://<host>/<database>?sslmode=require`
+     (for example `jdbc:postgresql://ep-cool-sun-123456.ap-southeast-1.aws.neon.tech/neondb?sslmode=require`).
+3. **Create the services on Render** (https://render.com, sign up with GitHub).
+   - **New > Blueprint**, pick the repository. Render reads `render.yaml` and asks for the values marked
+     `sync: false`:
+     - `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD`: from Neon.
+     - `APP_ADMIN_EMAIL`, `APP_ADMIN_PASSWORD`: the User Admin login for the live site (use a strong password).
+     - `APP_CORS_ALLOWED_ORIGIN`: `https://prestige-web.onrender.com` (the static site URL; adjust if Render
+       gives a different name).
+     - `VITE_API_BASE_URL`: `https://prestige-api.onrender.com` (the API URL).
+   - `APP_JWT_SECRET` is generated by Render automatically.
+   - The first deploy runs the Flyway migrations on Neon and creates the User Admin.
+4. **Check it works:** open `https://prestige-api.onrender.com/actuator/health` (should say `UP`), then the
+   static site URL. If the two URLs differ from the ones above, update `APP_CORS_ALLOWED_ORIGIN` and
+   `VITE_API_BASE_URL` in the Render dashboard and redeploy both services.
+5. **Load the test data into the demo database** (once, from your own computer):
+
+   macOS / Linux:
+   ```bash
+   cd backend
+   SPRING_DATASOURCE_URL='jdbc:postgresql://<host>/<db>?sslmode=require' \
+   SPRING_DATASOURCE_USERNAME='<user>' SPRING_DATASOURCE_PASSWORD='<password>' \
+   mvn spring-boot:run -Dspring-boot.run.profiles=seed
+   ```
+   Windows PowerShell:
+   ```powershell
+   cd backend
+   $env:SPRING_DATASOURCE_URL='jdbc:postgresql://<host>/<db>?sslmode=require'
+   $env:SPRING_DATASOURCE_USERNAME='<user>'; $env:SPRING_DATASOURCE_PASSWORD='<password>'
+   mvn spring-boot:run "-Dspring-boot.run.profiles=seed"
+   ```
+   It inserts about 100 records per data type (categories, customers, designers, companies, profiles,
+   projects with photos, favourites, views, enquiries, availability, ratings and issue reports) and exits.
+   Running it again does nothing if the demo accounts already exist.
+
+**Free-tier behaviour to know before a demo:** the Render API sleeps after 15 minutes without traffic and takes
+30-60 seconds to wake. Open the site a minute before presenting. Neon also pauses when idle and wakes in
+under a second.
+
+## CI/CD
+
+- **CI** (`.github/workflows/ci.yml`) runs on every push and pull request: backend unit and integration tests
+  (`mvn verify` with a throw-away PostgreSQL container), frontend lint, tests and production build.
+- **CD**: both Render services use `autoDeployTrigger: checksPass`, so a push to `main` is deployed
+  automatically **only if all CI checks pass**. A failing test blocks the deployment.
+- Suggested flow: work on `feature/<name>` branches, open a pull request into `main`, merge when green,
+  and watch Render deploy it.
+
+## Configuration reference
+
+| Variable | Used by | Purpose |
+|---|---|---|
+| `SPRING_PROFILES_ACTIVE` | API | `dev` (default locally), `prod` (Render), `seed` (load test data) |
+| `SPRING_DATASOURCE_URL` / `_USERNAME` / `_PASSWORD` | API | JDBC connection; the API fails fast with a clear error if unreachable |
+| `APP_JWT_SECRET` | API | HMAC key, at least 32 characters; required in prod |
+| `APP_JWT_EXPIRY_HOURS` | API | Token lifetime (default 8) |
+| `APP_CORS_ALLOWED_ORIGIN` | API | Frontend origin(s), comma separated |
+| `APP_ADMIN_EMAIL` / `APP_ADMIN_PASSWORD` | API | Initial User Admin, created at start-up if none exists |
+| `APP_SEED_PASSWORD` | API | Password of generated demo accounts (default `Password123`) |
+| `VITE_API_BASE_URL` | Frontend (build time) | API origin, without `/api` |
+
+No secret is committed. `.env` files are git-ignored.

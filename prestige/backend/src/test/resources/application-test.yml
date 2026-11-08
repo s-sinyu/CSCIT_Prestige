@@ -1,0 +1,9 @@
+# Integration tests: the datasource is provided by Testcontainers (@ServiceConnection).
+app:
+  jwt:
+    secret: test-secret-test-secret-test-secret-test-secret-0123456789
+  admin:
+    email: admin@test.local
+    password: Admin12345
+  seed:
+    enabled: false

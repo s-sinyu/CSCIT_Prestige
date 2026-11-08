@@ -1,0 +1,37 @@
+digraph G {
+rankdir=LR; graph [fontname="Helvetica", fontsize=16, labelloc=t, label="Use case diagram: Customer", nodesep=0.25, ranksep=1.2, pad=0.3];
+node [fontname="Helvetica", fontsize=12]; edge [arrowhead=none, color="#555555"];
+a0 [shape=none, image="actor.png", label="Customer", labelloc=b, height=1.7, width=1.0, imagescale=false];
+subgraph cluster_sys { label="Prestige platform"; style=rounded; color="#2f4f4f"; fontsize=14;
+US04 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="Search and filter IDPs by keyword,\ncategory, budget, status and\ndesigner\n(US04)"];
+US05 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="View an IDP's details, photos and\ndesigner information\n(US05)"];
+US07 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="See a designer's average rating\nand reviews\n(US07)"];
+US11 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="Save an IDP to my favourites\n(US11)"];
+US12 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="Remove an IDP from my favourites\n(US12)"];
+US13 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="View my favourite list\n(US13)"];
+US14 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="Send an enquiry about an IDP\n(US14)"];
+US15 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="View a designer's availability\ncalendar\n(US15)"];
+US16 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="Rate a designer, optionally for\none IDP\n(US16)"];
+US17 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="Edit my rating\n(US17)"];
+US18 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="Delete my rating\n(US18)"];
+US19 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="Report a problem with an IDP, a\ndesigner or the platform\n(US19)"];
+US20 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="See my reports and their status\n(US20)"];
+US21 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="Open one of my reports\n(US21)"];
+}
+a0 -> US04;
+a0 -> US05;
+a0 -> US07;
+a0 -> US11;
+a0 -> US12;
+a0 -> US13;
+a0 -> US14;
+a0 -> US15;
+a0 -> US16;
+a0 -> US17;
+a0 -> US18;
+a0 -> US19;
+a0 -> US20;
+a0 -> US21;
+US11 -> US05 [style=dashed, arrowhead=open, label="«extend»", fontsize=10, constraint=false];
+US14 -> US05 [style=dashed, arrowhead=open, label="«extend»", fontsize=10, constraint=false];
+}

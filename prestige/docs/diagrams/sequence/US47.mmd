@@ -1,0 +1,22 @@
+sequenceDiagram
+  autonumber
+  actor A as Platform Management
+  participant UI as «boundary»<br/>CategoriesPage
+  participant B as «boundary»<br/>ChangeCategoryActiveBoundary
+  participant C as «control»<br/>ChangeCategoryActiveController
+  participant Category as «entity»<br/>Category
+  participant DB as PostgreSQL
+  A->>UI: activate or deactivate a category
+  UI->>B: PATCH /api/management/categories/{id}/active (JWT)
+  B->>C: setActive(Integer categoryId, boolean active)
+  C->>Category: setActive()
+  Category->>DB: SQL
+  DB-->>Category: rows
+  Category-->>C: result
+  C->>Category: save()
+  Category->>DB: SQL
+  DB-->>Category: rows
+  Category-->>C: result
+  C-->>B: CategoryResponse
+  B-->>UI: 200 OK JSON
+  UI-->>A: show result

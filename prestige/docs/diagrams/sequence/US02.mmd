@@ -1,0 +1,24 @@
+sequenceDiagram
+  autonumber
+  actor A as Visitor
+  participant UI as «boundary»<br/>LoginPage
+  participant B as «boundary»<br/>LoginBoundary
+  participant C as «control»<br/>LoginController
+  participant User as «entity»<br/>User
+  participant DB as PostgreSQL
+  A->>UI: log in
+  UI->>B: POST /api/auth/login (JWT)
+  B->>C: login(LoginRequest request)
+  alt wrong password / suspended
+    C-->>B: ApiException
+    B-->>UI: 401 / 403 error JSON
+    UI-->>A: show error
+  else valid
+  C->>User: findByEmail()
+  User->>DB: SQL
+  DB-->>User: rows
+  User-->>C: result
+  C-->>B: LoginResponse
+  B-->>UI: 200 OK JSON
+  UI-->>A: show result
+  end

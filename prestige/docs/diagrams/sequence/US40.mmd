@@ -1,0 +1,28 @@
+sequenceDiagram
+  autonumber
+  actor A as Interior Designer
+  participant UI as «boundary»<br/>EnquiryDetailPage
+  participant B as «boundary»<br/>UpdateEnquiryStatusBoundary
+  participant C as «control»<br/>UpdateEnquiryStatusController
+  participant Enquiry as «entity»<br/>Enquiry
+  participant DB as PostgreSQL
+  A->>UI: mark an enquiry READ or REPLIED
+  UI->>B: PATCH /api/designer/enquiries/{id}/status (JWT)
+  B->>C: updateStatus(Integer designerId, Integer enquiryId, EnquiryStatus status)
+  alt backwards transition (to NEW)
+    C-->>B: ApiException
+    B-->>UI: 400 error JSON
+    UI-->>A: show error
+  else valid
+  C->>Enquiry: changeStatus()
+  Enquiry->>DB: SQL
+  DB-->>Enquiry: rows
+  Enquiry-->>C: result
+  C->>Enquiry: save()
+  Enquiry->>DB: SQL
+  DB-->>Enquiry: rows
+  Enquiry-->>C: result
+  C-->>B: EnquiryDetail
+  B-->>UI: 200 OK JSON
+  UI-->>A: show result
+  end

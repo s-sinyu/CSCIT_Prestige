@@ -1,0 +1,61 @@
+# Render Blueprint: creates the API (Docker web service) and the React app (static site).
+# The database is hosted separately on Neon (free PostgreSQL); its connection details are entered
+# in the Render dashboard when the Blueprint is first applied (sync: false = you type the value).
+#
+# CI/CD: autoDeployTrigger "checksPass" makes Render deploy a commit to main only after the
+# GitHub Actions checks (backend tests, frontend tests and lint) have passed.
+services:
+  - type: web
+    name: prestige-api
+    runtime: docker
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: singapore
+    branch: main
+    healthCheckPath: /actuator/health
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+      - key: APP_JWT_SECRET
+        generateValue: true
+      - key: APP_JWT_EXPIRY_HOURS
+        value: "8"
+      - key: APP_CORS_ALLOWED_ORIGIN
+        sync: false
+      - key: APP_ADMIN_EMAIL
+        sync: false
+      - key: APP_ADMIN_PASSWORD
+        sync: false
+
+  - type: web
+    name: prestige-web
+    runtime: static
+    rootDir: frontend
+    branch: main
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: VITE_API_BASE_URL
+        sync: false
+      - key: NODE_VERSION
+        value: "22"
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff

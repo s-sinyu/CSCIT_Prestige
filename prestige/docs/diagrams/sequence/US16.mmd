@@ -1,0 +1,32 @@
+sequenceDiagram
+  autonumber
+  actor A as Customer
+  participant UI as «boundary»<br/>RatingFormDialog
+  participant B as «boundary»<br/>CreateRatingBoundary
+  participant C as «control»<br/>CreateRatingController
+  participant Rating as «entity»<br/>Rating
+  participant DB as PostgreSQL
+  A->>UI: rate a designer, optionally for one IDP,
+  UI->>B: POST /api/customer/ratings (JWT)
+  B->>C: create(Integer customerId, RatingRequest request)
+  alt duplicate rating or IDP of another designer
+    C-->>B: ApiException
+    B-->>UI: 409 / 400 error JSON
+    UI-->>A: show error
+  else valid
+  C->>Rating: generalRatingExists()
+  Rating->>DB: SQL
+  DB-->>Rating: rows
+  Rating-->>C: result
+  C->>Rating: projectRatingExists()
+  Rating->>DB: SQL
+  DB-->>Rating: rows
+  Rating-->>C: result
+  C->>Rating: save()
+  Rating->>DB: SQL
+  DB-->>Rating: rows
+  Rating-->>C: result
+  C-->>B: RatingResponse
+  B-->>UI: 201 Created JSON
+  UI-->>A: show result
+  end

@@ -1,0 +1,24 @@
+sequenceDiagram
+  autonumber
+  actor A as Customer
+  participant UI as «boundary»<br/>RatingsSection
+  participant B as «boundary»<br/>DeleteOwnRatingBoundary
+  participant C as «control»<br/>DeleteOwnRatingController
+  participant Rating as «entity»<br/>Rating
+  participant DB as PostgreSQL
+  A->>UI: delete my rating
+  UI->>B: DELETE /api/customer/ratings/{id} (JWT)
+  B->>C: delete(Integer customerId, Integer ratingId)
+  alt rating not written by caller
+    C-->>B: ApiException
+    B-->>UI: 404 error JSON
+    UI-->>A: show error
+  else valid
+  C->>Rating: delete()
+  Rating->>DB: SQL
+  DB-->>Rating: rows
+  Rating-->>C: result
+  C-->>B: void
+  B-->>UI: 204 No Content
+  UI-->>A: show result
+  end

@@ -1,0 +1,22 @@
+sequenceDiagram
+  autonumber
+  actor A as Visitor
+  participant UI as «boundary»<br/>RatingsSection
+  participant B as «boundary»<br/>ViewDesignerRatingsBoundary
+  participant C as «control»<br/>ViewDesignerRatingsController
+  participant Rating as «entity»<br/>Rating
+  participant DB as PostgreSQL
+  A->>UI: see a designer's average rating and reviews
+  UI->>B: GET /api/designers/{id}/ratings (JWT)
+  B->>C: view(Integer designerId, Integer projectId, Integer callerId, Pageable pageable)
+  C->>Rating: summaryFor()
+  Rating->>DB: SQL
+  DB-->>Rating: rows
+  Rating-->>C: result
+  C->>Rating: findForDesigner()
+  Rating->>DB: SQL
+  DB-->>Rating: rows
+  Rating-->>C: result
+  C-->>B: DesignerRatingsResponse
+  B-->>UI: 200 OK JSON
+  UI-->>A: show result

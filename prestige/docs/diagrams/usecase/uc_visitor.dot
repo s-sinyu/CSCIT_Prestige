@@ -1,0 +1,28 @@
+digraph G {
+rankdir=LR; graph [fontname="Helvetica", fontsize=16, labelloc=t, label="Use case diagram: Visitor and any logged-in user", nodesep=0.25, ranksep=1.2, pad=0.3];
+node [fontname="Helvetica", fontsize=12]; edge [arrowhead=none, color="#555555"];
+a0 [shape=none, image="actor.png", label="Visitor", labelloc=b, height=1.7, width=1.0, imagescale=false];
+a1 [shape=none, image="actor.png", label="Logged-in user", labelloc=b, height=1.7, width=1.0, imagescale=false];
+subgraph cluster_sys { label="Prestige platform"; style=rounded; color="#2f4f4f"; fontsize=14;
+US01 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="Register as a Customer or Interior\nDesigner\n(US01)"];
+US02 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="Log in\n(US02)"];
+US04 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="Search and filter IDPs by keyword,\ncategory, budget, status and\ndesigner\n(US04)"];
+US05 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="View an IDP's details, photos and\ndesigner information\n(US05)"];
+US06 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="See the active categories\n(US06)"];
+US07 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="See a designer's average rating\nand reviews\n(US07)"];
+US03 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="Log out\n(US03)"];
+US08 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="View my profile\n(US08)"];
+US09 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="Edit my name and phone\n(US09)"];
+US10 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="Change my password\n(US10)"];
+}
+a0 -> US01;
+a0 -> US02;
+a0 -> US04;
+a0 -> US05;
+a0 -> US06;
+a0 -> US07;
+a1 -> US03;
+a1 -> US08;
+a1 -> US09;
+a1 -> US10;
+}

@@ -1,0 +1,18 @@
+sequenceDiagram
+  autonumber
+  actor A as User
+  participant UI as «boundary»<br/>ProfilePage
+  participant B as «boundary»<br/>ChangePasswordBoundary
+  participant C as «control»<br/>ChangePasswordController
+  participant User as «entity»<br/>User
+  participant DB as PostgreSQL
+  A->>UI: change my password
+  UI->>B: PUT /api/me/password (JWT)
+  B->>C: changePassword(Integer userId, ChangePasswordRequest request)
+  C->>User: save()
+  User->>DB: SQL
+  DB-->>User: rows
+  User-->>C: result
+  C-->>B: void
+  B-->>UI: 204 No Content
+  UI-->>A: show result

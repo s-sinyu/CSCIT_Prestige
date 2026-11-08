@@ -1,0 +1,18 @@
+sequenceDiagram
+  autonumber
+  actor A as Interior Designer
+  participant UI as «boundary»<br/>DesignerProfilePage
+  participant B as «boundary»<br/>ViewDesignerProfileBoundary
+  participant C as «control»<br/>ViewDesignerProfileController
+  participant DesignerProfile as «entity»<br/>DesignerProfile
+  participant DB as PostgreSQL
+  A->>UI: view my designer profile
+  UI->>B: GET /api/designer/profile (JWT)
+  B->>C: view(Integer designerId)
+  C->>DesignerProfile: findByDesigner()
+  DesignerProfile->>DB: SQL
+  DB-->>DesignerProfile: rows
+  DesignerProfile-->>C: result
+  C-->>B: DesignerProfileResponse
+  B-->>UI: 200 OK JSON
+  UI-->>A: show result

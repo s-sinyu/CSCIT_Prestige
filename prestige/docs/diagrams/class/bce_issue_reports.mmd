@@ -1,0 +1,38 @@
+---
+title: "Issue reports (customer and designer)"
+---
+classDiagram
+  direction LR
+  class SubmitIssueReportBoundary {
+    <<boundary>>
+    +submit() POST
+  }
+  class SubmitIssueReportController {
+    <<control>>
+    +submit(reporterId, request) IssueReportResponse
+  }
+  SubmitIssueReportBoundary --> SubmitIssueReportController
+  SubmitIssueReportController ..> IssueReport
+  class ViewMyIssueReportsBoundary {
+    <<boundary>>
+    +list() GET
+  }
+  class ViewMyIssueReportsController {
+    <<control>>
+    +list(reporterId, pageable) PageResponse~IssueReportResponse~
+  }
+  ViewMyIssueReportsBoundary --> ViewMyIssueReportsController
+  ViewMyIssueReportsController ..> IssueReport
+  class ViewMyIssueReportBoundary {
+    <<boundary>>
+    +view() GET
+  }
+  class ViewMyIssueReportController {
+    <<control>>
+    +view(reporterId, reportId) IssueReportResponse
+  }
+  ViewMyIssueReportBoundary --> ViewMyIssueReportController
+  ViewMyIssueReportController ..> IssueReport
+  class IssueReport {
+    <<entity>>
+  }

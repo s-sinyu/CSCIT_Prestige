@@ -1,0 +1,18 @@
+sequenceDiagram
+  autonumber
+  actor A as Customer
+  participant UI as «boundary»<br/>FavouritesPage
+  participant B as «boundary»<br/>ViewFavouritesBoundary
+  participant C as «control»<br/>ViewFavouritesController
+  participant Favourite as «entity»<br/>Favourite
+  participant DB as PostgreSQL
+  A->>UI: view my favourite list
+  UI->>B: GET /api/customer/favourites (JWT)
+  B->>C: list(Integer customerId, Pageable pageable)
+  C->>Favourite: findVisibleForCustomer()
+  Favourite->>DB: SQL
+  DB-->>Favourite: rows
+  Favourite-->>C: result
+  C-->>B: PageResponse<ProjectCard>
+  B-->>UI: 200 OK JSON
+  UI-->>A: show result

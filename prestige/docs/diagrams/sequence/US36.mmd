@@ -1,0 +1,22 @@
+sequenceDiagram
+  autonumber
+  actor A as Interior Designer
+  participant UI as «boundary»<br/>ProjectImages
+  participant B as «boundary»<br/>SetCoverImageBoundary
+  participant C as «control»<br/>SetCoverImageController
+  participant ProjectImage as «entity»<br/>ProjectImage
+  participant DB as PostgreSQL
+  A->>UI: choose the cover photo
+  UI->>B: PUT /api/designer/projects/{id}/images/{imageId}/cover (JWT)
+  B->>C: setCover(Integer designerId, Integer projectId, Integer imageId)
+  C->>ProjectImage: findByProject()
+  ProjectImage->>DB: SQL
+  DB-->>ProjectImage: rows
+  ProjectImage-->>C: result
+  C->>ProjectImage: save()
+  ProjectImage->>DB: SQL
+  DB-->>ProjectImage: rows
+  ProjectImage-->>C: result
+  C-->>B: List<ImageResponse>
+  B-->>UI: 200 OK JSON
+  UI-->>A: show result

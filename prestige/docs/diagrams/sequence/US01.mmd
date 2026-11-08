@@ -1,0 +1,28 @@
+sequenceDiagram
+  autonumber
+  actor A as Visitor
+  participant UI as «boundary»<br/>RegisterPage
+  participant B as «boundary»<br/>RegisterBoundary
+  participant C as «control»<br/>RegisterController
+  participant User as «entity»<br/>User
+  participant DB as PostgreSQL
+  A->>UI: register as a Customer or Interior Designer
+  UI->>B: POST /api/auth/register (JWT)
+  B->>C: register(RegisterRequest request)
+  alt role not CUSTOMER/ID, or email taken
+    C-->>B: ApiException
+    B-->>UI: 400 / 409 + fieldErrors error JSON
+    UI-->>A: show error
+  else valid
+  C->>User: emailTaken()
+  User->>DB: SQL
+  DB-->>User: rows
+  User-->>C: result
+  C->>User: save()
+  User->>DB: SQL
+  DB-->>User: rows
+  User-->>C: result
+  C-->>B: UserSummary
+  B-->>UI: 201 Created JSON
+  UI-->>A: show result
+  end

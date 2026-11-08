@@ -1,0 +1,28 @@
+sequenceDiagram
+  autonumber
+  actor A as User Admin
+  participant UI as «boundary»<br/>UsersPage
+  participant B as «boundary»<br/>DeleteUserAccountBoundary
+  participant C as «control»<br/>DeleteUserAccountController
+  participant User as «entity»<br/>User
+  participant DB as PostgreSQL
+  A->>UI: delete an account
+  UI->>B: DELETE /api/admin/users/{id} (JWT)
+  B->>C: delete(Integer adminId, Integer userId)
+  alt own account
+    C-->>B: ApiException
+    B-->>UI: 400 error JSON
+    UI-->>A: show error
+  else valid
+  C->>User: softDelete()
+  User->>DB: SQL
+  DB-->>User: rows
+  User-->>C: result
+  C->>User: save()
+  User->>DB: SQL
+  DB-->>User: rows
+  User-->>C: result
+  C-->>B: void
+  B-->>UI: 204 No Content
+  UI-->>A: show result
+  end

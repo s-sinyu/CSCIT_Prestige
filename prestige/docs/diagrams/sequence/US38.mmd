@@ -1,0 +1,18 @@
+sequenceDiagram
+  autonumber
+  actor A as Interior Designer
+  participant UI as «boundary»<br/>EnquiriesPage
+  participant B as «boundary»<br/>ViewEnquiriesBoundary
+  participant C as «control»<br/>ViewEnquiriesController
+  participant Enquiry as «entity»<br/>Enquiry
+  participant DB as PostgreSQL
+  A->>UI: see enquiries on my IDPs
+  UI->>B: GET /api/designer/enquiries (JWT)
+  B->>C: list(Integer designerId, EnquiryStatus status, Pageable pageable)
+  C->>Enquiry: findForDesigner()
+  Enquiry->>DB: SQL
+  DB-->>Enquiry: rows
+  Enquiry-->>C: result
+  C-->>B: PageResponse<EnquirySummary>
+  B-->>UI: 200 OK JSON
+  UI-->>A: show result

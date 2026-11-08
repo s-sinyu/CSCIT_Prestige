@@ -1,0 +1,21 @@
+sequenceDiagram
+  autonumber
+  actor A as Interior Designer
+  participant UI as «boundary»<br/>CompanyPage
+  participant B as «boundary»<br/>DeleteCompanyBoundary
+  participant C as «control»<br/>DeleteCompanyController
+  participant StorageService as «control»<br/>StorageService
+  participant DesignerCompany as «entity»<br/>DesignerCompany
+  participant DB as PostgreSQL
+  A->>UI: delete my company information
+  UI->>B: DELETE /api/designer/company (JWT)
+  B->>C: delete(Integer designerId)
+  C->>DesignerCompany: delete()
+  DesignerCompany->>DB: SQL
+  DB-->>DesignerCompany: rows
+  DesignerCompany-->>C: result
+  C->>StorageService: delete()
+  StorageService-->>C: result
+  C-->>B: void
+  B-->>UI: 204 No Content
+  UI-->>A: show result

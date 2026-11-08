@@ -1,0 +1,21 @@
+digraph G {
+rankdir=LR; graph [fontname="Helvetica", fontsize=16, labelloc=t, label="Use case diagram: Platform Management", nodesep=0.25, ranksep=1.2, pad=0.3];
+node [fontname="Helvetica", fontsize=12]; edge [arrowhead=none, color="#555555"];
+a0 [shape=none, image="actor.png", label="Platform Management", labelloc=b, height=1.7, width=1.0, imagescale=false];
+subgraph cluster_sys { label="Prestige platform"; style=rounded; color="#2f4f4f"; fontsize=14;
+US43 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="Create a category\n(US43)"];
+US44 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="List all categories\n(US44)"];
+US45 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="Edit a category\n(US45)"];
+US46 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="Delete an unused category\n(US46)"];
+US47 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="Activate or deactivate a category\n(US47)"];
+US48 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="Daily, weekly and monthly reports\n(US48)"];
+US49 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="Export a report as CSV\n(US49)"];
+}
+a0 -> US43;
+a0 -> US44;
+a0 -> US45;
+a0 -> US46;
+a0 -> US47;
+a0 -> US48;
+a0 -> US49;
+}

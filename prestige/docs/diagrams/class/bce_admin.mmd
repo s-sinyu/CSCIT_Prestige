@@ -1,0 +1,114 @@
+---
+title: "User admin: accounts, issue reports, ratings"
+---
+classDiagram
+  direction LR
+  class CreatePlatformManagerBoundary {
+    <<boundary>>
+    +create() POST
+  }
+  class CreatePlatformManagerController {
+    <<control>>
+    +create(adminId, request) AdminUserResponse
+  }
+  CreatePlatformManagerBoundary --> CreatePlatformManagerController
+  CreatePlatformManagerController ..> User
+  class SearchUserAccountsBoundary {
+    <<boundary>>
+    +search() GET
+  }
+  class SearchUserAccountsController {
+    <<control>>
+    +search(keyword, role, status, includeDeleted, pageable) PageResponse~AdminUserResponse~
+  }
+  SearchUserAccountsBoundary --> SearchUserAccountsController
+  SearchUserAccountsController ..> User
+  class ViewUserAccountBoundary {
+    <<boundary>>
+    +view() GET
+  }
+  class ViewUserAccountController {
+    <<control>>
+    +view(userId) AdminUserResponse
+  }
+  ViewUserAccountBoundary --> ViewUserAccountController
+  ViewUserAccountController ..> User
+  class UpdateUserAccountBoundary {
+    <<boundary>>
+    +update() PUT
+  }
+  class UpdateUserAccountController {
+    <<control>>
+    +update(userId, request) AdminUserResponse
+  }
+  UpdateUserAccountBoundary --> UpdateUserAccountController
+  UpdateUserAccountController ..> User
+  class ChangeAccountStatusBoundary {
+    <<boundary>>
+    +changeStatus() PATCH
+  }
+  class ChangeAccountStatusController {
+    <<control>>
+    +changeStatus(adminId, userId, status) AdminUserResponse
+  }
+  ChangeAccountStatusBoundary --> ChangeAccountStatusController
+  ChangeAccountStatusController ..> User
+  class DeleteUserAccountBoundary {
+    <<boundary>>
+    +delete() DELETE
+  }
+  class DeleteUserAccountController {
+    <<control>>
+    +delete(adminId, userId) void
+  }
+  DeleteUserAccountBoundary --> DeleteUserAccountController
+  DeleteUserAccountController ..> User
+  class ViewAllIssueReportsBoundary {
+    <<boundary>>
+    +list() GET
+  }
+  class ViewAllIssueReportsController {
+    <<control>>
+    +list(status, type, pageable) PageResponse~IssueReportResponse~
+  }
+  ViewAllIssueReportsBoundary --> ViewAllIssueReportsController
+  ViewAllIssueReportsController ..> IssueReport
+  class ViewIssueReportBoundary {
+    <<boundary>>
+    +view() GET
+  }
+  class ViewIssueReportController {
+    <<control>>
+    +view(reportId) IssueReportResponse
+  }
+  ViewIssueReportBoundary --> ViewIssueReportController
+  ViewIssueReportController ..> IssueReport
+  class RectifyIssueReportBoundary {
+    <<boundary>>
+    +rectify() PATCH
+  }
+  class RectifyIssueReportController {
+    <<control>>
+    +rectify(adminId, reportId) IssueReportResponse
+  }
+  RectifyIssueReportBoundary --> RectifyIssueReportController
+  RectifyIssueReportController ..> IssueReport
+  class DeleteAnyRatingBoundary {
+    <<boundary>>
+    +delete() DELETE
+  }
+  class DeleteAnyRatingController {
+    <<control>>
+    +delete(ratingId) void
+  }
+  DeleteAnyRatingBoundary --> DeleteAnyRatingController
+  DeleteAnyRatingController ..> Rating
+  class User {
+    <<entity>>
+  }
+  class IssueReport {
+    <<entity>>
+  }
+  class Rating {
+    <<entity>>
+  }

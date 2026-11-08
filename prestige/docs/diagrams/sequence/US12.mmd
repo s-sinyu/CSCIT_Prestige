@@ -1,0 +1,18 @@
+sequenceDiagram
+  autonumber
+  actor A as Customer
+  participant UI as «boundary»<br/>FavouriteButton
+  participant B as «boundary»<br/>RemoveFavouriteBoundary
+  participant C as «control»<br/>RemoveFavouriteController
+  participant Favourite as «entity»<br/>Favourite
+  participant DB as PostgreSQL
+  A->>UI: remove an IDP from my favourites
+  UI->>B: DELETE /api/customer/favourites/{projectId} (JWT)
+  B->>C: remove(Integer customerId, Integer projectId)
+  C->>Favourite: remove()
+  Favourite->>DB: SQL
+  DB-->>Favourite: rows
+  Favourite-->>C: result
+  C-->>B: void
+  B-->>UI: 204 No Content
+  UI-->>A: show result

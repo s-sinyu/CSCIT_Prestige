@@ -1,0 +1,55 @@
+sequenceDiagram
+  autonumber
+  actor A as Platform Management
+  participant UI as «boundary»<br/>ReportsPage
+  participant B as «boundary»<br/>ViewPlatformReportBoundary
+  participant C as «control»<br/>ViewPlatformReportController
+  participant PlatformReportGenerator as «control»<br/>PlatformReportGenerator
+  participant Category as «entity»<br/>Category
+  participant InteriorDesignProject as «entity»<br/>InteriorDesignProject
+  participant ProjectView as «entity»<br/>ProjectView
+  participant Favourite as «entity»<br/>Favourite
+  participant User as «entity»<br/>User
+  participant Enquiry as «entity»<br/>Enquiry
+  participant IssueReport as «entity»<br/>IssueReport
+  participant DB as PostgreSQL
+  A->>UI: daily, weekly and monthly reports
+  UI->>B: GET /api/management/reports (JWT)
+  B->>C: view(ReportPeriodType period, LocalDate date)
+  C->>PlatformReportGenerator: generate(period, date)
+  PlatformReportGenerator->>Category: findAllSorted()
+  Category->>DB: SQL
+  DB-->>Category: rows
+  Category-->>PlatformReportGenerator: result
+  PlatformReportGenerator->>InteriorDesignProject: countCreatedByCategory()
+  InteriorDesignProject->>DB: SQL
+  DB-->>InteriorDesignProject: rows
+  InteriorDesignProject-->>PlatformReportGenerator: result
+  PlatformReportGenerator->>ProjectView: countBetween()
+  ProjectView->>DB: SQL
+  DB-->>ProjectView: rows
+  ProjectView-->>PlatformReportGenerator: result
+  PlatformReportGenerator->>ProjectView: topViewed()
+  ProjectView->>DB: SQL
+  DB-->>ProjectView: rows
+  ProjectView-->>PlatformReportGenerator: result
+  PlatformReportGenerator->>Favourite: countSavedBetween()
+  Favourite->>DB: SQL
+  DB-->>Favourite: rows
+  Favourite-->>PlatformReportGenerator: result
+  PlatformReportGenerator->>User: countRegistrationsByRole()
+  User->>DB: SQL
+  DB-->>User: rows
+  User-->>PlatformReportGenerator: result
+  PlatformReportGenerator->>Enquiry: countCreatedBetween()
+  Enquiry->>DB: SQL
+  DB-->>Enquiry: rows
+  Enquiry-->>PlatformReportGenerator: result
+  PlatformReportGenerator->>IssueReport: countCreatedByStatus()
+  IssueReport->>DB: SQL
+  DB-->>IssueReport: rows
+  IssueReport-->>PlatformReportGenerator: result
+  PlatformReportGenerator-->>C: PlatformReport
+  C-->>B: PlatformReport
+  B-->>UI: 200 OK JSON
+  UI-->>A: show result

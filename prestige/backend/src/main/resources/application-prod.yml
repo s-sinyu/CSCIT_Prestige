@@ -1,0 +1,16 @@
+# Production (Render + Neon). All values must be provided as environment variables.
+# Demo data is never loaded by the prod profile itself; see the "seed" profile.
+spring:
+  datasource:
+    hikari:
+      # Neon scales to zero when idle: do not hold idle connections open forever.
+      minimum-idle: 0
+      idle-timeout: 60000
+      max-lifetime: 300000
+
+app:
+  seed:
+    enabled: false
+
+server:
+  forward-headers-strategy: framework

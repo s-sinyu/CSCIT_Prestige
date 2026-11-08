@@ -1,0 +1,27 @@
+digraph G {
+rankdir=LR; graph [fontname="Helvetica", fontsize=16, labelloc=t, label="Use case diagram: User Admin", nodesep=0.25, ranksep=1.2, pad=0.3];
+node [fontname="Helvetica", fontsize=12]; edge [arrowhead=none, color="#555555"];
+a0 [shape=none, image="actor.png", label="User Admin", labelloc=b, height=1.7, width=1.0, imagescale=false];
+subgraph cluster_sys { label="Prestige platform"; style=rounded; color="#2f4f4f"; fontsize=14;
+US50 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="Create Platform Management\naccounts\n(US50)"];
+US51 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="Search and filter accounts\n(US51)"];
+US52 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="View an account\n(US52)"];
+US53 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="Edit an account's name, phone and\nemail\n(US53)"];
+US54 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="Suspend or reactivate an account\n(US54)"];
+US55 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="Delete an account\n(US55)"];
+US56 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="See all issue reports\n(US56)"];
+US57 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="Open an issue report with reporter\nand target\n(US57)"];
+US58 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="Mark a report rectified\n(US58)"];
+US59 [shape=ellipse, style=filled, fillcolor="#eef3f3", label="Delete any rating\n(US59)"];
+}
+a0 -> US50;
+a0 -> US51;
+a0 -> US52;
+a0 -> US53;
+a0 -> US54;
+a0 -> US55;
+a0 -> US56;
+a0 -> US57;
+a0 -> US58;
+a0 -> US59;
+}

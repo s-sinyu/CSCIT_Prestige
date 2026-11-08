@@ -1,0 +1,58 @@
+---
+title: "Authentication and own account"
+---
+classDiagram
+  direction LR
+  class RegisterBoundary {
+    <<boundary>>
+    +register() POST
+  }
+  class RegisterController {
+    <<control>>
+    +register(request) UserSummary
+  }
+  RegisterBoundary --> RegisterController
+  RegisterController ..> User
+  class LoginBoundary {
+    <<boundary>>
+    +login() POST
+  }
+  class LoginController {
+    <<control>>
+    +login(request) LoginResponse
+  }
+  LoginBoundary --> LoginController
+  LoginController ..> User
+  class ViewOwnProfileBoundary {
+    <<boundary>>
+    +view() GET
+  }
+  class ViewOwnProfileController {
+    <<control>>
+    +view(userId) UserSummary
+  }
+  ViewOwnProfileBoundary --> ViewOwnProfileController
+  ViewOwnProfileController ..> User
+  class UpdateOwnProfileBoundary {
+    <<boundary>>
+    +update() PUT
+  }
+  class UpdateOwnProfileController {
+    <<control>>
+    +update(userId, request) UserSummary
+  }
+  UpdateOwnProfileBoundary --> UpdateOwnProfileController
+  UpdateOwnProfileController ..> User
+  class ChangePasswordBoundary {
+    <<boundary>>
+    +change() PUT
+  }
+  class ChangePasswordController {
+    <<control>>
+    +changePassword(userId, request) void
+  }
+  ChangePasswordBoundary --> ChangePasswordController
+  ChangePasswordController ..> User
+  class User {
+    <<entity>>
+  }

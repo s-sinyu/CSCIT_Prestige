@@ -1,0 +1,18 @@
+sequenceDiagram
+  autonumber
+  actor A as Interior Designer
+  participant UI as «boundary»<br/>AvailabilityPage
+  participant B as «boundary»<br/>ViewOwnAvailabilityBoundary
+  participant C as «control»<br/>ViewOwnAvailabilityController
+  participant Availability as «entity»<br/>Availability
+  participant DB as PostgreSQL
+  A->>UI: view my availability by month
+  UI->>B: GET /api/designer/availability (JWT)
+  B->>C: view(Integer designerId, YearMonth month)
+  C->>Availability: monthFor()
+  Availability->>DB: SQL
+  DB-->>Availability: rows
+  Availability-->>C: result
+  C-->>B: AvailabilityMonth
+  B-->>UI: 200 OK JSON
+  UI-->>A: show result

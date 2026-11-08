@@ -1,0 +1,110 @@
+---
+title: "Platform management: categories and reports"
+---
+classDiagram
+  direction LR
+  class CreateCategoryBoundary {
+    <<boundary>>
+    +create() POST
+  }
+  class CreateCategoryController {
+    <<control>>
+    +create(request) CategoryResponse
+  }
+  CreateCategoryBoundary --> CreateCategoryController
+  CreateCategoryController ..> Category
+  class ViewCategoriesBoundary {
+    <<boundary>>
+    +list() GET
+  }
+  class ViewCategoriesController {
+    <<control>>
+    +list(pageable) PageResponse~CategoryResponse~
+  }
+  ViewCategoriesBoundary --> ViewCategoriesController
+  ViewCategoriesController ..> Category
+  class UpdateCategoryBoundary {
+    <<boundary>>
+    +update() PUT
+  }
+  class UpdateCategoryController {
+    <<control>>
+    +update(categoryId, request) CategoryResponse
+  }
+  UpdateCategoryBoundary --> UpdateCategoryController
+  UpdateCategoryController ..> Category
+  class DeleteCategoryBoundary {
+    <<boundary>>
+    +delete() DELETE
+  }
+  class DeleteCategoryController {
+    <<control>>
+    +delete(categoryId) void
+  }
+  DeleteCategoryBoundary --> DeleteCategoryController
+  DeleteCategoryController ..> Category
+  class ChangeCategoryActiveBoundary {
+    <<boundary>>
+    +setActive() PATCH
+  }
+  class ChangeCategoryActiveController {
+    <<control>>
+    +setActive(categoryId, active) CategoryResponse
+  }
+  ChangeCategoryActiveBoundary --> ChangeCategoryActiveController
+  ChangeCategoryActiveController ..> Category
+  class ViewPlatformReportBoundary {
+    <<boundary>>
+    +view() GET
+  }
+  class ViewPlatformReportController {
+    <<control>>
+    +view(period, date) PlatformReport
+  }
+  ViewPlatformReportBoundary --> ViewPlatformReportController
+  ViewPlatformReportController ..> PlatformReportGenerator
+  PlatformReportGenerator ..> Category
+  PlatformReportGenerator ..> InteriorDesignProject
+  PlatformReportGenerator ..> ProjectView
+  PlatformReportGenerator ..> Favourite
+  PlatformReportGenerator ..> User
+  PlatformReportGenerator ..> Enquiry
+  PlatformReportGenerator ..> IssueReport
+  class ExportPlatformReportBoundary {
+    <<boundary>>
+    +export() GET
+  }
+  class ExportPlatformReportController {
+    <<control>>
+    +export(period, date) CsvExport
+  }
+  ExportPlatformReportBoundary --> ExportPlatformReportController
+  ExportPlatformReportController ..> PlatformReportGenerator
+  ExportPlatformReportController ..> ReportCsvRenderer
+  class Category {
+    <<entity>>
+  }
+  class PlatformReportGenerator {
+    <<control>>
+  }
+  class InteriorDesignProject {
+    <<entity>>
+  }
+  class ProjectView {
+    <<entity>>
+  }
+  class Favourite {
+    <<entity>>
+  }
+  class User {
+    <<entity>>
+  }
+  class Enquiry {
+    <<entity>>
+  }
+  class IssueReport {
+    <<entity>>
+  }
+  class ReportCsvRenderer {
+    <<control>>
+  }

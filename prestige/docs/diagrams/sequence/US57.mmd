@@ -1,0 +1,18 @@
+sequenceDiagram
+  autonumber
+  actor A as User Admin
+  participant UI as «boundary»<br/>AdminIssueReportsPage
+  participant B as «boundary»<br/>ViewIssueReportBoundary
+  participant C as «control»<br/>ViewIssueReportController
+  participant IssueReport as «entity»<br/>IssueReport
+  participant DB as PostgreSQL
+  A->>UI: open an issue report with reporter and target
+  UI->>B: GET /api/admin/issue-reports/{id} (JWT)
+  B->>C: view(Integer reportId)
+  C->>IssueReport: findById()
+  IssueReport->>DB: SQL
+  DB-->>IssueReport: rows
+  IssueReport-->>C: result
+  C-->>B: IssueReportResponse
+  B-->>UI: 200 OK JSON
+  UI-->>A: show result

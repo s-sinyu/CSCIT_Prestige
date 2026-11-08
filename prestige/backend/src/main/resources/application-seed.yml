@@ -1,0 +1,15 @@
+# One-off profile that loads the large test dataset (~100 records per data type)
+# into whatever database SPRING_DATASOURCE_URL points at, then exits.
+# Usage: see README "Loading the test data into the demo server".
+spring:
+  main:
+    web-application-type: none
+
+app:
+  jwt:
+    # No tokens are issued during a seed run; a placeholder keeps startup checks happy.
+    secret: ${APP_JWT_SECRET:seed-run-placeholder-secret-not-used-for-tokens-0123456789}
+  seed:
+    enabled: true
+    size: 100
+    exit-after-seed: true

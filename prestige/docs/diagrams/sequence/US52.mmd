@@ -1,0 +1,18 @@
+sequenceDiagram
+  autonumber
+  actor A as User Admin
+  participant UI as «boundary»<br/>UsersPage
+  participant B as «boundary»<br/>ViewUserAccountBoundary
+  participant C as «control»<br/>ViewUserAccountController
+  participant User as «entity»<br/>User
+  participant DB as PostgreSQL
+  A->>UI: view an account
+  UI->>B: GET /api/admin/users/{id} (JWT)
+  B->>C: view(Integer userId)
+  C->>User: findById()
+  User->>DB: SQL
+  DB-->>User: rows
+  User-->>C: result
+  C-->>B: AdminUserResponse
+  B-->>UI: 200 OK JSON
+  UI-->>A: show result

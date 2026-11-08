@@ -1,0 +1,28 @@
+sequenceDiagram
+  autonumber
+  actor A as Interior Designer
+  participant UI as «boundary»<br/>AvailabilityPage
+  participant B as «boundary»<br/>SetAvailabilityBoundary
+  participant C as «control»<br/>SetAvailabilityController
+  participant Availability as «entity»<br/>Availability
+  participant DB as PostgreSQL
+  A->>UI: mark dates available or unavailable
+  UI->>B: PUT /api/designer/availability/{date} (JWT)
+  B->>C: set(Integer designerId, LocalDate date, AvailabilityStatus status)
+  alt date in the past
+    C-->>B: ApiException
+    B-->>UI: 400 error JSON
+    UI-->>A: show error
+  else valid
+  C->>Availability: find()
+  Availability->>DB: SQL
+  DB-->>Availability: rows
+  Availability-->>C: result
+  C->>Availability: save()
+  Availability->>DB: SQL
+  DB-->>Availability: rows
+  Availability-->>C: result
+  C-->>B: AvailabilityDay
+  B-->>UI: 200 OK JSON
+  UI-->>A: show result
+  end

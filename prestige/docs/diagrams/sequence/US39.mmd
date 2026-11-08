@@ -1,0 +1,22 @@
+sequenceDiagram
+  autonumber
+  actor A as Interior Designer
+  participant UI as «boundary»<br/>EnquiryDetailPage
+  participant B as «boundary»<br/>ViewEnquiryDetailBoundary
+  participant C as «control»<br/>ViewEnquiryDetailController
+  participant Enquiry as «entity»<br/>Enquiry
+  participant DB as PostgreSQL
+  A->>UI: open an enquiry with the customer's contact details
+  UI->>B: GET /api/designer/enquiries/{id} (JWT)
+  B->>C: view(Integer designerId, Integer enquiryId)
+  C->>Enquiry: findById()
+  Enquiry->>DB: SQL
+  DB-->>Enquiry: rows
+  Enquiry-->>C: result
+  C->>Enquiry: changeStatus()
+  Enquiry->>DB: SQL
+  DB-->>Enquiry: rows
+  Enquiry-->>C: result
+  C-->>B: EnquiryDetail
+  B-->>UI: 200 OK JSON
+  UI-->>A: show result

@@ -1,0 +1,131 @@
+erDiagram
+  users ||--o| designer_profiles : "has"
+  users ||--o| designer_companies : "owns"
+  users ||--o{ projects : "designs"
+  categories ||--o{ projects : "classifies"
+  projects ||--o{ project_images : "has"
+  stored_files ||--o{ project_images : "stores"
+  users ||--o{ favourites : "saves"
+  projects ||--o{ favourites : "saved in"
+  users ||--o{ project_views : "views"
+  projects ||--o{ project_views : "viewed"
+  users ||--o{ enquiries : "sends"
+  projects ||--o{ enquiries : "about"
+  users ||--o{ availability : "sets"
+  users ||--o{ ratings : "writes / receives"
+  projects |o--o{ ratings : "rated for"
+  users ||--o{ issue_reports : "reports / rectifies"
+  projects |o--o{ issue_reports : "target"
+  users {
+    int id PK
+    varchar email UK "lower(email) unique"
+    varchar password_hash
+    varchar full_name
+    varchar phone
+    varchar role "CUSTOMER, INTERIOR_DESIGNER, PLATFORM_MANAGEMENT, USER_ADMIN"
+    varchar status "ACTIVE, SUSPENDED"
+    boolean deleted
+    timestamptz deleted_at
+    timestamptz created_at
+    timestamptz updated_at
+  }
+  designer_profiles {
+    int id PK
+    int designer_id FK,UK
+    varchar bio "<= 2000"
+    int years_of_experience "0..80"
+    varchar specialisation
+  }
+  designer_companies {
+    int id PK
+    int designer_id FK,UK
+    varchar company_name
+    varchar registration_number
+    text description
+    varchar address
+    varchar contact_email
+    varchar contact_phone
+    varchar website_url
+    varchar logo_key
+  }
+  categories {
+    int id PK
+    varchar name UK "lower(name) unique"
+    varchar description
+    boolean active
+  }
+  projects {
+    int id PK
+    int designer_id FK
+    int category_id FK
+    varchar title
+    text description
+    varchar status "CURRENT, COMPLETED"
+    numeric budget "12,2 >= 0"
+    date start_date
+    date end_date "check end >= start"
+    varchar location
+    boolean deleted
+    timestamptz created_at
+  }
+  project_images {
+    int id PK
+    int project_id FK
+    varchar file_key FK
+    int sort_order
+    boolean cover
+  }
+  stored_files {
+    varchar file_key PK
+    varchar content_type
+    int size_bytes
+    bytea data
+  }
+  favourites {
+    int customer_id PK,FK
+    int project_id PK,FK
+    timestamptz saved_at
+  }
+  project_views {
+    int id PK
+    int project_id FK
+    int customer_id FK
+    date view_date "unique(customer, project, date)"
+    timestamptz viewed_at
+  }
+  enquiries {
+    int id PK
+    int project_id FK
+    int customer_id FK
+    varchar message
+    varchar status "NEW, READ, REPLIED"
+    timestamptz read_at
+    timestamptz replied_at
+    timestamptz created_at
+  }
+  availability {
+    int id PK
+    int designer_id FK
+    date calendar_date "unique(designer, date)"
+    varchar status "AVAILABLE, UNAVAILABLE"
+  }
+  ratings {
+    int id PK
+    int customer_id FK
+    int designer_id FK
+    int project_id FK "nullable"
+    int score "1..5"
+    varchar comment
+  }
+  issue_reports {
+    int id PK
+    int reporter_id FK
+    varchar type "IDP_OR_DESIGNER, PLATFORM_ISSUE"
+    int target_project_id FK
+    int target_designer_id FK
+    varchar title
+    varchar description
+    varchar status "OPEN, RECTIFIED"
+    timestamptz rectified_at
+    int rectified_by_id FK
+  }

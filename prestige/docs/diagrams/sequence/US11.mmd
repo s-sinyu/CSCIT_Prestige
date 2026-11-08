@@ -1,0 +1,29 @@
+sequenceDiagram
+  autonumber
+  actor A as Customer
+  participant UI as «boundary»<br/>FavouriteButton
+  participant B as «boundary»<br/>AddFavouriteBoundary
+  participant C as «control»<br/>AddFavouriteController
+  participant InteriorDesignProject as «entity»<br/>InteriorDesignProject
+  participant Favourite as «entity»<br/>Favourite
+  participant DB as PostgreSQL
+  A->>UI: save an IDP to my favourites
+  UI->>B: POST /api/customer/favourites/{projectId} (JWT)
+  B->>C: add(Integer customerId, Integer projectId)
+  alt IDP not visible
+    C-->>B: ApiException
+    B-->>UI: 404 error JSON
+    UI-->>A: show error
+  else valid
+  C->>InteriorDesignProject: findVisibleById()
+  InteriorDesignProject->>DB: SQL
+  DB-->>InteriorDesignProject: rows
+  InteriorDesignProject-->>C: result
+  C->>Favourite: add()
+  Favourite->>DB: SQL
+  DB-->>Favourite: rows
+  Favourite-->>C: result
+  C-->>B: void
+  B-->>UI: 204 No Content
+  UI-->>A: show result
+  end

@@ -1,0 +1,22 @@
+sequenceDiagram
+  autonumber
+  actor A as Platform Management
+  participant UI as «boundary»<br/>CategoryDialog
+  participant B as «boundary»<br/>UpdateCategoryBoundary
+  participant C as «control»<br/>UpdateCategoryController
+  participant Category as «entity»<br/>Category
+  participant DB as PostgreSQL
+  A->>UI: edit a category
+  UI->>B: PUT /api/management/categories/{id} (JWT)
+  B->>C: update(Integer categoryId, CategoryRequest request)
+  C->>Category: update()
+  Category->>DB: SQL
+  DB-->>Category: rows
+  Category-->>C: result
+  C->>Category: save()
+  Category->>DB: SQL
+  DB-->>Category: rows
+  Category-->>C: result
+  C-->>B: CategoryResponse
+  B-->>UI: 200 OK JSON
+  UI-->>A: show result

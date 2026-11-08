@@ -1,0 +1,28 @@
+sequenceDiagram
+  autonumber
+  actor A as Interior Designer
+  participant UI as «boundary»<br/>MyProjectsPage
+  participant B as «boundary»<br/>ViewMyProjectsBoundary
+  participant C as «control»<br/>ViewMyProjectsController
+  participant InteriorDesignProject as «entity»<br/>InteriorDesignProject
+  participant ProjectView as «entity»<br/>ProjectView
+  participant Favourite as «entity»<br/>Favourite
+  participant DB as PostgreSQL
+  A->>UI: list my IDPs with views and shortlists
+  UI->>B: GET /api/designer/projects (JWT)
+  B->>C: list(Integer designerId, Pageable pageable)
+  C->>InteriorDesignProject: findOwnedByDesigner()
+  InteriorDesignProject->>DB: SQL
+  DB-->>InteriorDesignProject: rows
+  InteriorDesignProject-->>C: result
+  C->>ProjectView: countsForProjects()
+  ProjectView->>DB: SQL
+  DB-->>ProjectView: rows
+  ProjectView-->>C: result
+  C->>Favourite: shortlistCounts()
+  Favourite->>DB: SQL
+  DB-->>Favourite: rows
+  Favourite-->>C: result
+  C-->>B: PageResponse<DesignerProjectSummary>
+  B-->>UI: 200 OK JSON
+  UI-->>A: show result

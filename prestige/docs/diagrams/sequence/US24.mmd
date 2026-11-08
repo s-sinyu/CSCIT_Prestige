@@ -1,0 +1,22 @@
+sequenceDiagram
+  autonumber
+  actor A as Interior Designer
+  participant UI as «boundary»<br/>CompanyPage
+  participant B as «boundary»<br/>UpdateCompanyBoundary
+  participant C as «control»<br/>UpdateCompanyController
+  participant DesignerCompany as «entity»<br/>DesignerCompany
+  participant DB as PostgreSQL
+  A->>UI: update my company information
+  UI->>B: PUT /api/designer/company (JWT)
+  B->>C: update(Integer designerId, CompanyRequest request)
+  C->>DesignerCompany: update()
+  DesignerCompany->>DB: SQL
+  DB-->>DesignerCompany: rows
+  DesignerCompany-->>C: result
+  C->>DesignerCompany: save()
+  DesignerCompany->>DB: SQL
+  DB-->>DesignerCompany: rows
+  DesignerCompany-->>C: result
+  C-->>B: CompanyResponse
+  B-->>UI: 200 OK JSON
+  UI-->>A: show result

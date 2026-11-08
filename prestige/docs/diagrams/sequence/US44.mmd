@@ -1,0 +1,18 @@
+sequenceDiagram
+  autonumber
+  actor A as Platform Management
+  participant UI as «boundary»<br/>CategoriesPage
+  participant B as «boundary»<br/>ViewCategoriesBoundary
+  participant C as «control»<br/>ViewCategoriesController
+  participant Category as «entity»<br/>Category
+  participant DB as PostgreSQL
+  A->>UI: list all categories
+  UI->>B: GET /api/management/categories (JWT)
+  B->>C: list(Pageable pageable)
+  C->>Category: findAll()
+  Category->>DB: SQL
+  DB-->>Category: rows
+  Category-->>C: result
+  C-->>B: PageResponse<CategoryResponse>
+  B-->>UI: 200 OK JSON
+  UI-->>A: show result
