@@ -3,7 +3,6 @@ package com.prestige.renovation.boundary.browse;
 import java.math.BigDecimal;
 
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,13 +33,9 @@ public class SearchProjectsBoundary {
                                             @RequestParam(defaultValue = "newest") String sort,
                                             @RequestParam(defaultValue = "0") int page,
                                             @RequestParam(defaultValue = "9") int size) {
-        Sort order = switch (sort) {
-            case "budgetAsc" -> Sort.by(Sort.Order.asc("budget"), Sort.Order.desc("createdAt"));
-            case "budgetDesc" -> Sort.by(Sort.Order.desc("budget"), Sort.Order.desc("createdAt"));
-            default -> Sort.by(Sort.Order.desc("createdAt"), Sort.Order.desc("id"));
-        };
         var criteria = new InteriorDesignProject.SearchCriteria(keyword, categoryId, budgetMin, budgetMax, status,
-                designerName);
-        return controller.search(criteria, PageRequest.of(Math.max(page, 0), Math.min(Math.max(size, 1), 50), order));
+                designerName, sort);
+        // Ordering is applied inside the search itself (budget sorts keep projects without a budget last)
+        return controller.search(criteria, PageRequest.of(Math.max(page, 0), Math.min(Math.max(size, 1), 50)));
     }
 }

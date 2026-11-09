@@ -29,7 +29,9 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
@@ -148,7 +150,11 @@ public class InteriorDesignProject {
         return repository.countByDesignerIdAndDeletedFalse(designerId);
     }
 
-    /** Public search (FR-CUS-1). All filters are optional and combinable. */
+    /**
+     * Public search (FR-CUS-1). All filters are optional and combinable. Sort: "newest" (default),
+     * "budgetAsc" or "budgetDesc"; IDPs without a budget always come last when sorting by budget.
+     * The pageable must be unsorted: ordering is applied here.
+     */
     public static Page<InteriorDesignProject> search(SearchCriteria criteria, Pageable pageable) {
         Specification<InteriorDesignProject> spec = visible().and((root, query, cb) -> {
             List<Predicate> p = new ArrayList<>();
@@ -174,6 +180,18 @@ public class InteriorDesignProject {
                 p.add(designerNameMatches(root, query, cb,
                         "%" + escapeLike(criteria.designerName().trim().toLowerCase()) + "%"));
             }
+            // Ordering (Spring Data drops it again for the count query)
+            List<Order> order = new ArrayList<>();
+            String sort = criteria.sort() == null ? "newest" : criteria.sort();
+            if (sort.equals("budgetAsc") || sort.equals("budgetDesc")) {
+                Expression<Integer> noBudgetLast = cb.<Integer>selectCase()
+                        .when(cb.isNull(root.get("budget")), 1).otherwise(0);
+                order.add(cb.asc(noBudgetLast));
+                order.add(sort.equals("budgetAsc") ? cb.asc(root.get("budget")) : cb.desc(root.get("budget")));
+            }
+            order.add(cb.desc(root.get("createdAt")));
+            order.add(cb.desc(root.get("id")));
+            query.orderBy(order);
             return cb.and(p.toArray(new Predicate[0]));
         });
         return repository.findAll(spec, pageable);
@@ -262,7 +280,7 @@ public class InteriorDesignProject {
 
     /** Search filters for {@link #search(SearchCriteria, Pageable)}. */
     public record SearchCriteria(String keyword, Integer categoryId, BigDecimal budgetMin, BigDecimal budgetMax,
-                                 ProjectStatus status, String designerName) {
+                                 ProjectStatus status, String designerName, String sort) {
     }
 
     // ------------------------------------------------------------------ accessors
