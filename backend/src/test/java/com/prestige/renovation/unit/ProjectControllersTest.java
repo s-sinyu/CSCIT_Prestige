@@ -106,6 +106,6 @@ class ProjectControllersTest extends EntityMockSupport {
         new DeleteProjectController(TestData.clockAt("2026-11-08T10:00")).delete(1, 100);
         assertThat(p.isDeleted()).isTrue();
         verify(projects).save(p);
-        verify(projects, never()).delete(any());
+        verify(projects, never()).delete(any(InteriorDesignProject.class));
     }
 }

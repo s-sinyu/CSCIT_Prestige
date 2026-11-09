@@ -45,7 +45,7 @@ class ManagementAndAdminControllersTest extends EntityMockSupport {
         when(categories.findById(10)).thenReturn(Optional.of(c));
         when(projects.countByCategoryId(10)).thenReturn(2L);
         assertApiError(() -> new DeleteCategoryController().delete(10), HttpStatus.CONFLICT);
-        verify(categories, never()).delete(any());
+        verify(categories, never()).delete(any(Category.class));
     }
 
     @Test
@@ -92,7 +92,7 @@ class ManagementAndAdminControllersTest extends EntityMockSupport {
         new DeleteUserAccountController(TestData.clockAt("2026-11-08T10:00")).delete(9, 4);
         assertThat(customer.isDeleted()).isTrue();
         verify(users).save(customer);
-        verify(users, never()).delete(any());
+        verify(users, never()).delete(any(User.class));
     }
 
     @Test

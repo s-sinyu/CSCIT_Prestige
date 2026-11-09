@@ -5,7 +5,6 @@ import java.time.Clock;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.prestige.renovation.common.exception.ApiException;
 import com.prestige.renovation.dto.enquiry.EnquiryDetail;
 import com.prestige.renovation.entity.Enquiry;
 import com.prestige.renovation.entity.EnquiryStatus;
